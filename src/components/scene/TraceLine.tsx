@@ -5,7 +5,7 @@
 
 'use client';
 
-import { useRef } from 'react';
+import { useRef, memo } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { H_INITIAL, G } from '@/lib/constants';
@@ -15,7 +15,7 @@ interface TraceLineProps {
   visible: boolean;
 }
 
-export function TraceLine({ tRef, visible }: TraceLineProps) {
+function TraceLineImpl({ tRef, visible }: TraceLineProps) {
   const lineRef = useRef<THREE.Line>(null);
   const geometryRef = useRef<THREE.BufferGeometry>(null);
 
@@ -81,3 +81,5 @@ export function TraceLine({ tRef, visible }: TraceLineProps) {
     </line>
   );
 }
+
+export const TraceLine = memo(TraceLineImpl);

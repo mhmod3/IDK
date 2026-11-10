@@ -5,7 +5,7 @@
 
 'use client';
 
-import { useRef } from 'react';
+import { useRef, memo } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 
@@ -18,7 +18,7 @@ interface GravityArrowProps {
 
 const ARROW_LENGTH = 1.8;
 
-export function GravityArrow({ ballYRef, visible }: GravityArrowProps) {
+function GravityArrowImpl({ ballYRef, visible }: GravityArrowProps) {
   const groupRef = useRef<THREE.Group>(null);
 
   useFrame(() => {
@@ -53,3 +53,5 @@ export function GravityArrow({ ballYRef, visible }: GravityArrowProps) {
     </group>
   );
 }
+
+export const GravityArrow = memo(GravityArrowImpl);

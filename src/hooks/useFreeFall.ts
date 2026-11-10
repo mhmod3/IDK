@@ -55,11 +55,19 @@ export function useFreeFall() {
   // مرجع للزمن داخل حلقة الرسم (لتجنّب إعادة التصيير في كل إطار)
   const tRef = useRef<number>(0);
 
-  // تحديث الزمن من داخل useFrame (بدون إعادة تصيير لكل إطار)
+  // تحديث الزمن من داخل useFrame
+  // المبدأ: tRef يُحدّث كل إطار (60fps) ليبقى المشهد 3D سلساً،
+  // لكن حالة React t تُحدّث بتردد أقل (~15fps) لتقليل إعادة تصيير الواجهة
+  // ومنع race conditions في مكوّنات Text/Html
+  const lastUiUpdate = useRef<number>(0);
   const setTimeFromFrame = useCallback((newT: number) => {
     const clamped = clampTime(newT);
     tRef.current = clamped;
-    setTState(clamped);
+    // تحديث حالة React فقط إذا تغيّر الزمن بمقدار ≥ 0.07s، أو عند الاصطدام
+    if (Math.abs(lastUiUpdate.current - clamped) >= 0.07 || clamped >= T_TOTAL) {
+      lastUiUpdate.current = clamped;
+      setTState(clamped);
+    }
   }, []);
 
   // تعيين زمن محدد (من شريط الزمن — يوقف التشغيل)
@@ -81,6 +89,7 @@ export function useFreeFall() {
 
   const reset = useCallback(() => {
     tRef.current = 0;
+    lastUiUpdate.current = 0;
     setTState(0);
     setIsPlaying(false);
     setSolutionStep(0);

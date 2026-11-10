@@ -1,44 +1,46 @@
 // ============================================================
 // HeightRuler — مسطرة جانبية تُظهر الارتفاع الحي
 // علامات كل 5 أمتار، مع تسمية h الحالية
+// يستعمل Text من drei (يُرسم في الفضاء 3D) بدلاً من Html
+// لتجنّب race condition في React portals
 // ============================================================
 
 'use client';
 
-import { useRef } from 'react';
+import { useRef, useMemo, memo } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
-import { Html } from '@react-three/drei';
+import { Text } from '@react-three/drei';
 import { H_INITIAL } from '@/lib/constants';
 
 interface HeightRulerProps {
-  // الزمن الحالي (لإظهار الارتفاع الحي)
   tRef: React.MutableRefObject<number>;
-  // تمييز قيمة معينة (مثلاً 45 في التبويب 1، 40 في التبويب 3)
   highlightValue?: number | null;
-  // إظهار/إخفاء
   visible: boolean;
 }
 
-export function HeightRuler({ tRef, highlightValue = null, visible }: HeightRulerProps) {
+function HeightRulerImpl({ tRef, highlightValue = null, visible }: HeightRulerProps) {
   const markerRef = useRef<THREE.Group>(null);
-  const labelRef = useRef<HTMLDivElement>(null);
+  const labelRef = useRef<THREE.Mesh>(null);
 
-  // علامات المسطرة كل 5m
-  const marks: number[] = [];
-  for (let h = 0; h <= H_INITIAL; h += 5) marks.push(h);
+  // حفظ علامات المسطرة في memo لتجنّب إعادة إنشاء المصفوفة
+  const marks = useMemo(() => {
+    const m: number[] = [];
+    for (let h = 0; h <= H_INITIAL; h += 5) m.push(h);
+    return m;
+  }, []);
 
   useFrame(() => {
     if (!markerRef.current) return;
-    // ارتفاع الكرة الحالي فوق سطح الأرض
     const t = tRef.current;
     const y = H_INITIAL + 0.5 * (-10) * t * t;
     const h = Math.max(0, y);
 
     markerRef.current.position.y = h;
 
+    // تحديث نص التسمية مباشرة على الميش (بدون إعادة تصيير React)
     if (labelRef.current) {
-      labelRef.current.textContent = `h = ${h.toFixed(1)} m`;
+      (labelRef.current as any).text = `h = ${h.toFixed(1)} m`;
     }
   });
 
@@ -65,23 +67,19 @@ export function HeightRuler({ tRef, highlightValue = null, visible }: HeightRule
                 emissiveIntensity={isHighlight ? 0.4 : 0}
               />
             </mesh>
-            <Html position={[1.3, 0, 0]} center distanceFactor={14}>
-              <div
-                style={{
-                  background: isHighlight ? '#22c55e' : 'white',
-                  color: isHighlight ? 'white' : '#1e293b',
-                  padding: '1px 6px',
-                  borderRadius: '4px',
-                  fontSize: '11px',
-                  fontWeight: 'bold',
-                  fontFamily: 'sans-serif',
-                  border: '1px solid #cbd5e1',
-                  whiteSpace: 'nowrap',
-                }}
-              >
-                {h}
-              </div>
-            </Html>
+            <Text
+              position={[1.4, 0, 0]}
+              fontSize={0.55}
+              color={isHighlight ? '#ffffff' : '#1e293b'}
+              backgroundColor={isHighlight ? '#22c55e' : '#ffffff'}
+              backgroundPadding={[0.3, 0.18]}
+              anchorX="left"
+              anchorY="middle"
+              outlineColor="#000000"
+              outlineWidth={0}
+            >
+              {String(h)}
+            </Text>
           </group>
         );
       })}
@@ -97,41 +95,32 @@ export function HeightRuler({ tRef, highlightValue = null, visible }: HeightRule
             emissiveIntensity={0.5}
           />
         </mesh>
-        <Html position={[-0.8, 0, 0]} center distanceFactor={12}>
-          <div
-            ref={labelRef}
-            style={{
-              background: '#f59e0b',
-              color: 'white',
-              padding: '3px 8px',
-              borderRadius: '6px',
-              fontSize: '12px',
-              fontWeight: 'bold',
-              fontFamily: 'sans-serif',
-              border: '1px solid #d97706',
-              whiteSpace: 'nowrap',
-              boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
-            }}
-          >
-            h = …
-          </div>
-        </Html>
+        <Text
+          ref={labelRef}
+          position={[-0.5, 0, 0]}
+          fontSize={0.6}
+          color="#ffffff"
+          backgroundColor="#f59e0b"
+          backgroundPadding={[0.35, 0.22]}
+          anchorX="right"
+          anchorY="middle"
+        >
+          h = ...
+        </Text>
       </group>
 
-      {/* تسمية "h" في الأعلى */}
-      <Html position={[0, H_INITIAL + 1.5, 0]} center distanceFactor={12}>
-        <div
-          style={{
-            color: '#1e293b',
-            fontSize: '14px',
-            fontWeight: 'bold',
-            fontFamily: 'serif',
-            fontStyle: 'italic',
-          }}
-        >
-          h (m)
-        </div>
-      </Html>
+      {/* تسمية "h (m)" في الأعلى */}
+      <Text
+        position={[0, H_INITIAL + 1.5, 0]}
+        fontSize={0.7}
+        color="#1e293b"
+        anchorX="center"
+        anchorY="middle"
+      >
+        h (m)
+      </Text>
     </group>
   );
 }
+
+export const HeightRuler = memo(HeightRulerImpl);

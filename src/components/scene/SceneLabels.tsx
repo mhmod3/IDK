@@ -1,29 +1,30 @@
 // ============================================================
-// SceneLabels — تسميات Html فوق الكرة
-// تُظهر: t, v, h, g (محىّثة لحظياً)
+// SceneLabels — تسميات Text فوق الكرة
+// تُظهر: t, vf, h, g (محدّثة لحظياً)
+// يستعمل Text من drei (يُرسم في الفضاء 3D) بدلاً من Html
+// لتجنّب race condition في React portals
 // ============================================================
 
 'use client';
 
-import { useRef } from 'react';
+import { useRef, memo, useEffect } from 'react';
 import { useFrame } from '@react-three/fiber';
-import { Html } from '@react-three/drei';
-import { H_INITIAL, G } from '@/lib/constants';
+import * as THREE from 'three';
+import { Text } from '@react-three/drei';
+import { G } from '@/lib/constants';
 
 interface SceneLabelsProps {
   tRef: React.MutableRefObject<number>;
   ballYRef: React.MutableRefObject<number>;
-  // أي التسميات تُظهر؟
   showTime?: boolean;
   showVelocity?: boolean;
   showHeight?: boolean;
   showGravity?: boolean;
-  // إظهار تسمية كبيرة عند الاصطدام (vf = -30 m/s ↓)
   showImpactLabel?: boolean;
   visible?: boolean;
 }
 
-export function SceneLabels({
+function SceneLabelsImpl({
   tRef,
   ballYRef,
   showTime = true,
@@ -34,10 +35,16 @@ export function SceneLabels({
   visible = true,
 }: SceneLabelsProps) {
   const groupRef = useRef<THREE.Group>(null);
-  const tLabelRef = useRef<HTMLSpanElement>(null);
-  const vLabelRef = useRef<HTMLSpanElement>(null);
-  const hLabelRef = useRef<HTMLSpanElement>(null);
-  const impactLabelRef = useRef<HTMLDivElement>(null);
+  const tLabelRef = useRef<THREE.Mesh>(null);
+  const vLabelRef = useRef<THREE.Mesh>(null);
+  const hLabelRef = useRef<THREE.Mesh>(null);
+  const impactLabelRef = useRef<THREE.Mesh>(null);
+
+  // مرجع لقيم showImpactLabel (للاستعمال داخل useFrame)
+  const showImpactRef = useRef<boolean>(showImpactLabel);
+  useEffect(() => {
+    showImpactRef.current = showImpactLabel;
+  }, [showImpactLabel]);
 
   useFrame(() => {
     if (!groupRef.current) return;
@@ -46,15 +53,21 @@ export function SceneLabels({
 
     groupRef.current.position.set(0, ballY, 0);
 
-    const vf = G * t; // السرعة (سالب)
+    const vf = G * t;
     const h = Math.max(0, ballY);
 
-    if (tLabelRef.current) tLabelRef.current.textContent = `t = ${t.toFixed(2)} s`;
-    if (vLabelRef.current) vLabelRef.current.textContent = `vf = ${vf.toFixed(1)} m/s`;
-    if (hLabelRef.current) hLabelRef.current.textContent = `h = ${h.toFixed(1)} m`;
-
+    // تحديث النصوص مباشرة على الميشات (بدون إعادة تصيير React)
+    if (tLabelRef.current) {
+      (tLabelRef.current as any).text = `t = ${t.toFixed(2)} s`;
+    }
+    if (vLabelRef.current) {
+      (vLabelRef.current as any).text = `vf = ${vf.toFixed(1)} m/s`;
+    }
+    if (hLabelRef.current) {
+      (hLabelRef.current as any).text = `h = ${h.toFixed(1)} m`;
+    }
     if (impactLabelRef.current) {
-      impactLabelRef.current.style.display = (showImpactLabel && t >= 3) ? 'block' : 'none';
+      impactLabelRef.current.visible = (showImpactRef.current && t >= 3);
     }
   });
 
@@ -62,110 +75,78 @@ export function SceneLabels({
 
   return (
     <group ref={groupRef}>
-      <Html position={[1.5, 1.2, 0]} center distanceFactor={10} zIndexRange={[10, 0]}>
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '4px',
-            pointerEvents: 'none',
-            direction: 'ltr',
-          }}
+      {showTime && (
+        <Text
+          ref={tLabelRef}
+          position={[1.8, 1.8, 0]}
+          fontSize={0.5}
+          color="#1e293b"
+          backgroundColor="#ffffff"
+          backgroundPadding={[0.25, 0.15]}
+          anchorX="left"
+          anchorY="middle"
         >
-          {showTime && (
-            <div
-              style={{
-                background: 'white',
-                border: '1px solid #cbd5e1',
-                borderRadius: '4px',
-                padding: '2px 8px',
-                fontSize: '12px',
-                fontFamily: 'sans-serif',
-                color: '#1e293b',
-                whiteSpace: 'nowrap',
-              }}
-            >
-              <span ref={tLabelRef}>t = …</span>
-            </div>
-          )}
-          {showVelocity && (
-            <div
-              style={{
-                background: '#fef2f2',
-                border: '1px solid #ef4444',
-                borderRadius: '4px',
-                padding: '2px 8px',
-                fontSize: '12px',
-                fontFamily: 'sans-serif',
-                color: '#b91c1c',
-                fontWeight: 'bold',
-                whiteSpace: 'nowrap',
-              }}
-            >
-              <span ref={vLabelRef}>vf = …</span>
-            </div>
-          )}
-          {showHeight && (
-            <div
-              style={{
-                background: '#fffbeb',
-                border: '1px solid #f59e0b',
-                borderRadius: '4px',
-                padding: '2px 8px',
-                fontSize: '12px',
-                fontFamily: 'sans-serif',
-                color: '#b45309',
-                fontWeight: 'bold',
-                whiteSpace: 'nowrap',
-              }}
-            >
-              <span ref={hLabelRef}>h = …</span>
-            </div>
-          )}
-          {showGravity && (
-            <div
-              style={{
-                background: '#eff6ff',
-                border: '1px solid #3b82f6',
-                borderRadius: '4px',
-                padding: '2px 8px',
-                fontSize: '12px',
-                fontFamily: 'sans-serif',
-                color: '#1d4ed8',
-                fontWeight: 'bold',
-                whiteSpace: 'nowrap',
-              }}
-            >
-              g = −10 m/s²
-            </div>
-          )}
-        </div>
-      </Html>
-
-      {/* تسمية كبيرة عند الاصطدام */}
+          t = ...
+        </Text>
+      )}
+      {showVelocity && (
+        <Text
+          ref={vLabelRef}
+          position={[1.8, 1.0, 0]}
+          fontSize={0.5}
+          color="#b91c1c"
+          backgroundColor="#fef2f2"
+          backgroundPadding={[0.25, 0.15]}
+          anchorX="left"
+          anchorY="middle"
+        >
+          vf = ...
+        </Text>
+      )}
+      {showHeight && (
+        <Text
+          ref={hLabelRef}
+          position={[1.8, 0.2, 0]}
+          fontSize={0.5}
+          color="#b45309"
+          backgroundColor="#fffbeb"
+          backgroundPadding={[0.25, 0.15]}
+          anchorX="left"
+          anchorY="middle"
+        >
+          h = ...
+        </Text>
+      )}
+      {showGravity && (
+        <Text
+          position={[1.8, -0.6, 0]}
+          fontSize={0.5}
+          color="#1d4ed8"
+          backgroundColor="#eff6ff"
+          backgroundPadding={[0.25, 0.15]}
+          anchorX="left"
+          anchorY="middle"
+        >
+          g = -10 m/s^2
+        </Text>
+      )}
       {showImpactLabel && (
-        <Html position={[0, -2.5, 0]} center distanceFactor={8}>
-          <div
-            ref={impactLabelRef}
-            style={{
-              display: 'none',
-              background: '#dc2626',
-              color: 'white',
-              padding: '6px 14px',
-              borderRadius: '8px',
-              fontSize: '18px',
-              fontWeight: 'bold',
-              fontFamily: 'sans-serif',
-              border: '2px solid #991b1b',
-              boxShadow: '0 4px 8px rgba(0,0,0,0.3)',
-              direction: 'ltr',
-              whiteSpace: 'nowrap',
-            }}
-          >
-            vf = −30 m/s ↓
-          </div>
-        </Html>
+        <Text
+          ref={impactLabelRef}
+          position={[0, -2.5, 0]}
+          fontSize={0.9}
+          color="#ffffff"
+          backgroundColor="#dc2626"
+          backgroundPadding={[0.4, 0.25]}
+          anchorX="center"
+          anchorY="middle"
+          visible={false}
+        >
+          vf = -30 m/s (down)
+        </Text>
       )}
     </group>
   );
 }
+
+export const SceneLabels = memo(SceneLabelsImpl);

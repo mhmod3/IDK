@@ -5,7 +5,7 @@
 
 'use client';
 
-import { useRef } from 'react';
+import { useRef, memo } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 
@@ -20,7 +20,7 @@ interface VelocityArrowProps {
   scale?: number;
 }
 
-export function VelocityArrow({ tRef, ballYRef, visible, scale = 0.1 }: VelocityArrowProps) {
+function VelocityArrowImpl({ tRef, ballYRef, visible, scale = 0.1 }: VelocityArrowProps) {
   const groupRef = useRef<THREE.Group>(null);
   const shaftRef = useRef<THREE.Mesh>(null);
 
@@ -79,3 +79,5 @@ export function VelocityArrow({ tRef, ballYRef, visible, scale = 0.1 }: Velocity
     </group>
   );
 }
+
+export const VelocityArrow = memo(VelocityArrowImpl);
