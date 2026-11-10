@@ -60,5 +60,7 @@ agent-ctx/
 tests/
 download/
 upload/
-prisma/*.db
-prisma/*.db-journal
+# Database files
+*.db
+*.db-journal
+db/
