@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Eye, RotateCcw } from 'lucide-react';
 import type { TabId } from '@/hooks/useFreeFall';
 import { EQUATION_TAB_1, EQUATION_TAB_2, EQUATION_TAB_3 } from '@/lib/equations';
+import { MathText } from './MathText';
 
 interface EquationPanelProps {
   activeTab: TabId;
@@ -168,7 +169,7 @@ function EquationLine({
       dir="ltr"
       style={{ fontFamily: '"Computer Modern Serif", "Times New Roman", serif' }}
     >
-      {text}
+      <MathText>{text}</MathText>
     </div>
   );
 }

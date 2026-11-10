@@ -10,6 +10,7 @@
 import { Card } from '@/components/ui/card';
 import { Building2, Zap, Timer } from 'lucide-react';
 import type { TabId } from '@/hooks/useFreeFall';
+import { MathText } from './MathText';
 
 interface TabsProps {
   activeTab: TabId;
@@ -27,13 +28,13 @@ const TABS: Array<{ id: TabId; label: string; icon: React.ReactNode; subtitle: s
     id: 2,
     label: 'سرعة الاصطدام',
     icon: <Zap className="w-4 h-4" />,
-    subtitle: 'vf = −30 m/s',
+    subtitle: 'v_f = −30 m/s',
   },
   {
     id: 3,
     label: 'بعد 1 ثانية',
     icon: <Timer className="w-4 h-4" />,
-    subtitle: 'vf = −10, h = 40',
+    subtitle: 'v_f = −10, h = 40',
   },
 ];
 
@@ -58,12 +59,12 @@ export function Tabs({ activeTab, onTabChange }: TabsProps) {
                 <span className="text-xs font-bold">{tab.label}</span>
               </div>
               <span
-                className={`text-[10px] font-mono ${
+                className={`text-[10px] ${
                   isActive ? 'text-sky-100' : 'text-slate-500'
                 }`}
                 dir="ltr"
               >
-                {tab.subtitle}
+                <MathText>{tab.subtitle}</MathText>
               </span>
             </button>
           );

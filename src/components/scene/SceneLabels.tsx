@@ -61,7 +61,7 @@ function SceneLabelsImpl({
       (tLabelRef.current as any).text = `t = ${t.toFixed(2)} s`;
     }
     if (vLabelRef.current) {
-      (vLabelRef.current as any).text = `vf = ${vf.toFixed(1)} m/s`;
+      (vLabelRef.current as any).text = `v_f = ${vf.toFixed(1)} m/s`;
     }
     if (hLabelRef.current) {
       (hLabelRef.current as any).text = `h = ${h.toFixed(1)} m`;
@@ -100,7 +100,7 @@ function SceneLabelsImpl({
           anchorX="left"
           anchorY="middle"
         >
-          vf = ...
+          v_f = ...
         </Text>
       )}
       {showHeight && (
@@ -142,7 +142,7 @@ function SceneLabelsImpl({
           anchorY="middle"
           visible={false}
         >
-          vf = -30 m/s (down)
+          v_f = -30 m/s (down)
         </Text>
       )}
     </group>
