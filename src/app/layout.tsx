@@ -1,28 +1,50 @@
 import type { Metadata } from "next";
-import { Cairo } from "next/font/google";
+import { Cairo, IBM_Plex_Sans_Arabic, JetBrains_Mono, STIX_Two_Text } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 
 const cairo = Cairo({
   variable: "--font-cairo",
   subsets: ["arabic", "latin"],
+  weight: ["400", "500", "600", "700"],
+  display: "swap",
+});
+
+const ibmPlexArabic = IBM_Plex_Sans_Arabic({
+  variable: "--font-ibm-arabic",
+  subsets: ["arabic", "latin"],
+  weight: ["400", "500", "600", "700"],
+  display: "swap",
+});
+
+const jetbrainsMono = JetBrains_Mono({
+  variable: "--font-jetbrains-mono",
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  display: "swap",
+});
+
+const stixMath = STIX_Two_Text({
+  variable: "--font-stix-math",
+  subsets: ["latin"],
+  weight: ["400", "600", "700"],
+  style: ["normal", "italic"],
   display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "المثال 3 — السقوط الحر | فيزياء الصف الخامس علمي",
+  title: "المثال 3 - السقوط الحر | فيزياء الصف الخامس علمي",
   description:
-    "موقع تفاعلي ثلاثي الأبعاد لشرح المثال 3 (السقوط الحر) من الفصل الثاني — الحركة الخطية، كتاب الفيزياء للصف الخامس العلمي، صفحة 42.",
+    "منظومة تعليمية تفاعلية ثلاثية الأبعاد لشرح وحساب مسائل السقوط الحر من كتاب الفيزياء للصف الخامس العلمي، الفصل الثاني، صفحة 42.",
   keywords: [
     "فيزياء",
     "السقوط الحر",
     "الحركة الخطية",
     "تعجيل الجاذبية",
     "الصف الخامس علمي",
-    "تفاعلي",
-    "ثلاثي الأبعاد",
+    "العراق",
+    "محاكاة علمية",
   ],
-  authors: [{ name: "Physics 3D" }],
 };
 
 export default function RootLayout({
@@ -31,11 +53,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ar" dir="rtl" suppressHydrationWarning>
-      <body
-        className={`${cairo.variable} antialiased bg-background text-foreground`}
-        style={{ fontFamily: 'var(--font-cairo), "Segoe UI", sans-serif' }}
-      >
+    <html
+      lang="ar"
+      dir="rtl"
+      className={`${cairo.variable} ${ibmPlexArabic.variable} ${jetbrainsMono.variable} ${stixMath.variable}`}
+      suppressHydrationWarning
+    >
+      <body className="antialiased bg-slate-950 text-slate-100 font-sans selection:bg-sky-500/20 selection:text-sky-300">
         {children}
         <Toaster />
       </body>

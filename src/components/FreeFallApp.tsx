@@ -1,10 +1,6 @@
-// ============================================================
-// FreeFallApp — المكوّن الجامع
-// يربط: الحالة (useFreeFall) + Canvas + UI
-// ============================================================
-
 'use client';
 
+import React from 'react';
 import dynamic from 'next/dynamic';
 import { useFreeFall } from '@/hooks/useFreeFall';
 import { Tabs } from '@/components/ui/physics/Tabs';
@@ -16,76 +12,86 @@ import { Controls } from '@/components/ui/physics/Controls';
 import { Timeline } from '@/components/ui/physics/Timeline';
 import { QuestionCard } from '@/components/ui/physics/QuestionCard';
 import { MathText } from '@/components/ui/physics/MathText';
-// تحميل Onboarding بدون SSR (يحتاج localStorage)
-const Onboarding = dynamic(
+import { Onboarding } from '@/components/ui/physics/Onboarding';
+import { G, H_INITIAL, T_TOTAL, VI } from '@/lib/constants';
+
+// Load Onboarding without SSR
+const OnboardingModal = dynamic(
   () => import('@/components/ui/physics/Onboarding').then((m) => m.Onboarding),
   { ssr: false }
 );
 
-// تحميل Canvas ديناميكياً (Three.js يعمل على العميل فقط)
+// Load 3D Canvas dynamically
 const FreeFallCanvas = dynamic(
   () => import('@/components/scene/FreeFallCanvas').then((m) => m.FreeFallCanvas),
-  { ssr: false, loading: () => (
-    <div className="w-full h-full flex items-center justify-center bg-gradient-to-b from-sky-100 to-sky-50">
-      <div className="text-slate-500 text-sm">جارٍ تحميل المشهد ثلاثي الأبعاد…</div>
-    </div>
-  )}
+  {
+    ssr: false,
+    loading: () => (
+      <div className="w-full h-full flex flex-col items-center justify-center bg-slate-950 text-slate-400 gap-2 font-mono text-xs">
+        <div className="w-6 h-6 border-2 border-sky-500 border-t-transparent rounded-full animate-spin" />
+        <span>جارٍ تهيئة محرك الفيزياء ثلاثي الأبعاد...</span>
+      </div>
+    ),
+  }
 );
 
 export function FreeFallApp() {
   const { state, actions, tRef, setTimeFromFrame } = useFreeFall();
 
-  return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100" dir="rtl">
-      {/* دليل البداية التفاعلي */}
-      <Onboarding />
+  const handleStepDelta = (delta: number) => {
+    actions.setTime(state.t + delta);
+  };
 
-      {/* الرأس */}
-      <header className="bg-white border-b border-slate-200 shadow-sm">
-        <div className="max-w-[1600px] mx-auto px-4 py-3 flex items-center justify-between">
+  const handleSeek = (targetTime: number) => {
+    actions.setTime(targetTime);
+  };
+
+  return (
+    <div className="min-h-screen bg-slate-950 text-slate-100 font-sans flex flex-col selection:bg-sky-500/30 selection:text-sky-200" dir="rtl">
+      {/* Interactive Onboarding */}
+      <OnboardingModal />
+
+      {/* Top Laboratory Station Header */}
+      <header className="border-b border-slate-800/60 bg-slate-950/80 sticky top-0 z-30 backdrop-blur">
+        <div className="max-w-[1720px] mx-auto px-4 py-2.5 flex items-center justify-between gap-3">
+          {/* Identity & Textbook Metadata */}
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-sky-500 to-blue-700 flex items-center justify-center text-white font-bold text-lg shadow-md">
+            <div className="w-8 h-8 rounded bg-slate-900 border border-slate-800 flex items-center justify-center text-sky-400/90 font-math text-base font-semibold">
               g
             </div>
             <div>
-              <h1 className="text-lg font-bold text-slate-900">
-                المثال 3 — السقوط الحر
-              </h1>
-              <p className="text-xs text-slate-500">
-                كتاب الفيزياء — الصف الخامس علمي — الفصل الثاني — صفحة 42
+              <div className="flex items-center gap-2">
+                <h1 className="text-sm sm:text-base font-bold tracking-tight text-white font-arabic">
+                  محاكاة السقوط الحر
+                </h1>
+                <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-900 text-slate-400 font-mono border border-slate-800">
+                  المثال 3 (ص 42)
+                </span>
+              </div>
+              <p className="text-xs text-slate-400 font-arabic">
+                الفيزياء للصف الخامس العلمي : الفصل الثاني
               </p>
             </div>
           </div>
-          <div className="flex items-center gap-3 text-xs">
-            <div className="hidden md:flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 rounded-full">
-              <div className="w-2 h-2 rounded-full bg-blue-500" />
-              <span className="text-slate-700" dir="ltr">
-                <MathText>g = −10 m/s^2</MathText>
-              </span>
-            </div>
-            <div className="hidden md:flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 rounded-full">
-              <div className="w-2 h-2 rounded-full bg-red-500" />
-              <span className="text-slate-700" dir="ltr">
-                <MathText>v_i = 0</MathText>
-              </span>
-            </div>
+
+          {/* Curriculum Parameters Summary */}
+          <div className="flex items-center gap-2 text-[11px] font-telemetry text-slate-400" dir="ltr">
+            <span>g = {G} m/s²</span>
+            <span className="text-slate-700">•</span>
+            <span>H = {H_INITIAL} m</span>
+            <span className="text-slate-700">•</span>
+            <span>t = {T_TOTAL} s</span>
           </div>
         </div>
       </header>
 
-      {/* المحتوى الرئيسي */}
-      <main className="max-w-[1600px] mx-auto p-4">
-        {/* التبويبات */}
-        <div className="mb-4">
-          <Tabs activeTab={state.activeTab} onTabChange={actions.setTab} />
-        </div>
-
-        {/* الشبكة الرئيسية: مشهد 3D (يسار) + لوحة جانبية (يمين في RTL) */}
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_420px] gap-4">
-          {/* العمود الأيمن بصرياً في RTL: المشهد 3D */}
+      {/* Main Split Workstation */}
+      <main className="max-w-[1720px] mx-auto p-3 sm:p-4 w-full flex-1 flex flex-col">
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_470px] xl:grid-cols-[1fr_510px] gap-3.5 flex-1">
+          {/* Left Column: 3D Simulation Viewport + Controls + Graphs */}
           <div className="flex flex-col gap-3 order-2 lg:order-1">
-            {/* المشهد 3D */}
-            <div className="relative h-[55vh] lg:h-[65vh] rounded-xl overflow-hidden border border-slate-200 shadow-md bg-gradient-to-b from-sky-100 to-sky-50">
+            {/* 3D Viewport Box */}
+            <div className="relative h-[48vh] sm:h-[55vh] lg:h-[58vh] min-h-[380px] rounded-lg overflow-hidden border border-slate-800/80 bg-slate-950 shadow-inner">
               <FreeFallCanvas
                 t={state.t}
                 isPlaying={state.isPlaying}
@@ -95,73 +101,78 @@ export function FreeFallApp() {
                 hasReset={state.hasReset}
                 activeTab={state.activeTab}
               />
-              {/* تلميح تحكم بالكاميرا */}
-              <div className="absolute bottom-3 right-3 bg-white/80 backdrop-blur px-3 py-1.5 rounded-md text-xs text-slate-600 pointer-events-none">
-                🖱️ زر أيسر: تدوير • زر أيمن: تحريك • عجلة: تقريب
+
+              {/* Viewport Overlay: Streamlined Vector Legend */}
+              <div
+                className="absolute top-3 right-3 bg-slate-950/80 border border-slate-800/80 backdrop-blur px-2.5 py-1 rounded text-[11px] text-slate-400 pointer-events-none flex items-center gap-3 font-arabic"
+                dir="rtl"
+              >
+                <div className="flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-rose-400/80 shrink-0" />
+                  <span className="text-slate-300">السرعة vf</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-sky-400/80 shrink-0" />
+                  <span className="text-slate-300">التعجيل g</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-amber-400/80 shrink-0" />
+                  <span className="text-slate-300">الارتفاع h</span>
+                </div>
               </div>
-              {/* تلميح التبويب */}
-              <div className="absolute top-3 left-3 bg-white/80 backdrop-blur px-3 py-1.5 rounded-md text-xs text-slate-700 pointer-events-none font-bold">
-                {state.activeTab === 1 && 'الجزء الأول: حساب الارتفاع'}
-                {state.activeTab === 2 && 'الجزء الثاني: سرعة الاصطدام'}
-                {state.activeTab === 3 && 'الجزء الثالث: عند t = 1s'}
+
+              {/* Viewport Overlay: Camera Navigation Hint */}
+              <div
+                className="absolute bottom-3 right-3 bg-slate-950/70 border border-slate-800/60 backdrop-blur px-2 py-0.5 rounded text-[10px] text-slate-500 pointer-events-none"
+                dir="rtl"
+              >
+                الكاميرا: تدوير بالماوس • تحريك بالزر الأيمن • تقريب بالعجلة
               </div>
             </div>
 
-            {/* شريط الزمن */}
-            <Timeline t={state.t} onTimeChange={actions.setTime} />
+            {/* Unified Simulation Transport Dock */}
+            <div className="bg-slate-900 border border-slate-800/80 rounded-lg p-2.5 space-y-2">
+              <Timeline t={state.t} onTimeChange={actions.setTime} />
+              <Controls
+                isPlaying={state.isPlaying}
+                activeTab={state.activeTab}
+                onTogglePlay={actions.togglePlay}
+                onReset={actions.reset}
+                onStepDelta={handleStepDelta}
+                onSeek={handleSeek}
+              />
+            </div>
 
-            {/* عناصر التحكم */}
-            <Controls
-              isPlaying={state.isPlaying}
-              activeTab={state.activeTab}
-              onTogglePlay={actions.togglePlay}
-              onReset={actions.reset}
-              onNext={actions.nextTab}
-              onPrev={actions.prevTab}
-            />
-
-            {/* الرسوم البيانية */}
+            {/* Synchronized Graphs */}
             <MiniGraph t={state.t} />
           </div>
 
-          {/* العمود الجانبي: السؤال + الشرح + القيم + المعادلة */}
-          <div className="flex flex-col gap-3 order-1 lg:order-2 lg:max-h-[calc(100vh-140px)] lg:overflow-y-auto pr-1">
-            {/* نص السؤال كاملاً */}
+          {/* Right Column: Curriculum Problem Statement + Tabs + Derivation + Telemetry */}
+          <div className="flex flex-col gap-3 order-1 lg:order-2">
+            {/* Textbook Problem Banner */}
             <QuestionCard />
 
-            {/* لوحة القيم الحية */}
+            {/* Curriculum Step Tabs */}
+            <Tabs activeTab={state.activeTab} onTabChange={actions.setTab} />
+
+            {/* Integrated Solution Studio: Concept & Mathematical Derivation */}
+            <div className="bg-slate-900 border border-slate-800/80 rounded-lg p-3.5 space-y-3">
+              <StepPanel activeTab={state.activeTab} />
+              <div className="border-t border-slate-800/60 pt-3">
+                <EquationPanel
+                  activeTab={state.activeTab}
+                  solutionStep={state.solutionStep}
+                  onReveal={actions.revealSolutionStep}
+                  onReset={actions.resetSolution}
+                />
+              </div>
+            </div>
+
+            {/* Real-time Telemetry Readout */}
             <ValuePanel t={state.t} activeTab={state.activeTab} />
-
-            {/* لوحة الشرح */}
-            <StepPanel activeTab={state.activeTab} />
-
-            {/* لوحة المعادلات */}
-            <EquationPanel
-              activeTab={state.activeTab}
-              solutionStep={state.solutionStep}
-              onReveal={actions.revealSolutionStep}
-              onReset={actions.resetSolution}
-            />
           </div>
         </div>
       </main>
-
-      {/* تذييل: ملاحظة المنهج */}
-      <footer className="bg-white border-t border-slate-200 mt-4">
-        <div className="max-w-[1600px] mx-auto px-4 py-3 text-xs text-slate-500 flex flex-wrap items-center justify-between gap-2">
-          <div className="flex items-center gap-3">
-            <span>المعادلات الثلاث للسقوط الحر:</span>
-            <span className="text-slate-700" dir="ltr"><MathText>v_f = g·t</MathText></span>
-            <span className="text-slate-300">|</span>
-            <span className="text-slate-700" dir="ltr"><MathText>Δy = ½·g·t^2</MathText></span>
-            <span className="text-slate-300">|</span>
-            <span className="text-slate-700" dir="ltr"><MathText>v_f = √(2·g·Δy)</MathText></span>
-          </div>
-          <div className="text-slate-400">
-            ملاحظة: g ≈ 9.8 m/s²، يُقرّب في المسائل إلى −10 m/s²
-          </div>
-        </div>
-      </footer>
     </div>
   );
 }

@@ -1,105 +1,100 @@
-// ============================================================
-// StepPanel — لوحة شرح كل تبويب
-// نص الشرح + المعطيات + الهدف
-// ============================================================
-
 'use client';
 
-import { Card } from '@/components/ui/card';
-import { Target, BookOpen } from 'lucide-react';
+import React from 'react';
 import type { TabId } from '@/hooks/useFreeFall';
+import { MathText } from './MathText';
 
 interface StepPanelProps {
   activeTab: TabId;
 }
 
-const TAB_CONTENT: Record<TabId, {
-  title: string;
-  goal: string;
-  given: string[];
-  explanation: string;
-  concept: string;
-}> = {
+const TAB_DATA: Record<
+  TabId,
+  {
+    title: string;
+    goal: string;
+    targetVar: string;
+    given: Array<{ label: string; math: string; note?: string }>;
+    explanation: string;
+    physicsLaw: string;
+  }
+> = {
   1: {
     title: 'الجزء الأول: حساب ارتفاع البناية',
-    goal: 'إيجاد ارتفاع البناية h انطلاقاً من مدة السقوط الكلية t = 3 s',
+    goal: 'حساب الارتفاع الكلي للبناية (H) انطلاقاً من زمن السقوط الحر للأرض.',
+    targetVar: 'h = +45 m',
     given: [
-      'مدة السقوط الكلية: t = 3 s',
-      'تعجيل الجاذبية: g = −10 m/s²',
-      'السرعة الابتدائية: v_i = 0 (سقوط حر)',
+      { label: 'زمن السقوط الكلي', math: 't = 3 s' },
+      { label: 'تعجيل الجاذبية', math: 'g = −10 m/s²' },
+      { label: 'السرعة الابتدائية', math: 'v_i = 0 m/s', note: 'سقوط حر من السكون' },
     ],
     explanation:
-      'في السقوط الحر تكون v_i = 0 دائماً. نستعمل معادلة الإزاحة-الزمن لإيجاد الإزاحة الكلية Δy خلال 3 ثوانٍ. الإشارة السالبة للإزاحة تعني اتجاهها نحو الأسفل، لذلك يكون ارتفاع البناية موجباً ويساوي القيمة المطلقة للإزاحة.',
-    concept: 'معادلة الإزاحة في السقوط الحر: Δy = ½·g·t²',
+      'نطبق معادلة الإزاحة بدلالة الزمن. الإشارة السالبة للإزاحة الناتجة (Δy = −45 m) تدل على أن الحركة باتجاه الأسفل، وبما أن الارتفاع مقدار قياسي موجب، فإن ارتفاع البناية h يساوي القيمة المطلقة للإزاحة: h = |Δy| = 45 m.',
+    physicsLaw: 'Δy = v_i · t + ½ · g · t²  ⟹  Δy = ½ · g · t²',
   },
   2: {
     title: 'الجزء الثاني: سرعة الكرة لحظة الاصطدام',
-    goal: 'إيجاد السرعة اللحظية v_f عند لحظة اصطدام الكرة بالأرض واتجاهها',
+    goal: 'حساب مقدار واتجاه السرعة النهائية (vf) للكرة عند ارتطامها بالأرض.',
+    targetVar: 'v_f = −30 m/s',
     given: [
-      'مدة السقوط الكلية: t = 3 s',
-      'تعجيل الجاذبية: g = −10 m/s²',
-      'السرعة الابتدائية: vᵢ = 0',
+      { label: 'زمن السقوط الكلي', math: 't = 3 s' },
+      { label: 'تعجيل الجاذبية', math: 'g = −10 m/s²' },
+      { label: 'السرعة الابتدائية', math: 'v_i = 0 m/s' },
     ],
     explanation:
-      'نستعمل معادلة السرعة-الزمن لإيجاد v_f عند t = 3 s. الإشارة السالبة لـ v_f تعني أن اتجاه السرعة نحو الأسفل، وهو الاتجاه نفسه لتعجيل الجاذبية g. هذا يوضح أن السرعة تزداد خطياً مع الزمن لأن g ثابت.',
-    concept: 'معادلة السرعة في السقوط الحر: v_f = g·t (لأن v_i = 0)',
+      'نطبق معادلة السرعة بدلالة الزمن. تزداد السرعة بمعدل ثابت مقداره 10 m/s في كل ثانية لأن التعجيل منتظم. الإشارة السالبة للناتج تؤكد فيزيائياً أن متجه السرعة موجه شاقولياً نحو الأسفل باتجاه الأرض.',
+    physicsLaw: 'v_f = v_i + g · t  ⟹  v_f = g · t',
   },
   3: {
-    title: 'الجزء الثالث: السرعة والارتفاع بعد 1 ثانية',
-    goal: 'عند t = 1 s، إيجاد v_f و h (الارتفاع فوق سطح الأرض)',
+    title: 'الجزء الثالث: السرعة والارتفاع بعد مرور ثانية واحدة',
+    goal: 'حساب السرعة اللحظية vf والارتفاع المتبقي h فوق سطح الأرض عند اللحظة t = 1 s.',
+    targetVar: 'v_f = −10 m/s , h = 40 m',
     given: [
-      'اللحظة الزمنية: t = 1 s',
-      'تعجيل الجاذبية: g = −10 m/s²',
-      'السرعة الابتدائية: v_i = 0',
-      'ارتفاع البناية: h = 45 m (من الجزء الأول)',
+      { label: 'اللحظة الزمنية المستهدفة', math: 't = 1 s' },
+      { label: 'تعجيل الجاذبية', math: 'g = −10 m/s²' },
+      { label: 'ارتفاع البناية الكلي', math: 'H = 45 m' },
     ],
     explanation:
-      'نحسب أولاً السرعة اللحظية v_f عند t = 1 s، ثم نحسب الإزاحة Δy خلال الثانية الأولى. بعد ذلك نطرح الإزاحة من ارتفاع البناية لنحصل على الارتفاع فوق سطح الأرض في تلك اللحظة. لاحظ أن الكرة قطعت 5 m فقط في الثانية الأولى، لكنها ستقطع 25 m في الثانية الثالثة — السرعة تزداد مع الزمن.',
-    concept: 'حل جزأين متتابعين: السرعة، ثم الإزاحة، ثم الارتفاع المتبقي.',
+      'نحسب السرعة اللحظية عند t = 1 s فتكون −10 m/s. ثم نحسب الإزاحة المقطوعة خلال هذه الثانية الأولى فتكون Δy = −5 m فقط. نطرح مقدار هذه الإزاحة من الارتفاع الكلي للبناية لنحصل على الارتفاع الحالي فوق الأرض: h = 45 − 5 = 40 m.',
+    physicsLaw: 'v_f = g · t  ,  Δy = ½ · g · t²  ,  h = H − |Δy|',
   },
 };
 
 export function StepPanel({ activeTab }: StepPanelProps) {
-  const content = TAB_CONTENT[activeTab];
+  const content = TAB_DATA[activeTab];
 
   return (
-    <Card className="p-4 bg-white shadow-sm">
-      <h3 className="text-base font-bold text-slate-900 mb-3 flex items-center gap-2 border-b pb-2">
-        <BookOpen className="w-4 h-4 text-sky-600" />
-        {content.title}
-      </h3>
-
-      {/* الهدف */}
-      <div className="mb-3 p-2.5 bg-sky-50 border-r-4 border-sky-500 rounded text-xs text-slate-700 leading-relaxed flex items-start gap-2">
-        <Target className="w-3.5 h-3.5 text-sky-600 mt-0.5 shrink-0" />
-        <span><strong className="text-sky-700">الهدف:</strong> {content.goal}</span>
+    <div className="space-y-2.5 text-right" dir="rtl">
+      {/* Title & Target */}
+      <div className="flex items-center justify-between border-b border-slate-800/60 pb-2">
+        <h3 className="text-sm font-semibold text-slate-100">{content.title}</h3>
+        <span className="text-xs font-telemetry px-2 py-0.5 rounded bg-slate-950 border border-slate-800 text-slate-300" dir="ltr">
+          <MathText>{content.targetVar}</MathText>
+        </span>
       </div>
 
-      {/* المعطيات */}
-      <div className="mb-3">
-        <div className="text-xs font-bold text-slate-600 mb-1.5">المعطيات:</div>
-        <ul className="space-y-1" dir="rtl">
-          {content.given.map((g, i) => (
-            <li key={i} className="text-xs text-slate-700 flex items-start gap-1.5">
-              <span className="text-sky-600 font-bold">•</span>
-              <span>{g}</span>
-            </li>
+      {/* Given values inline row */}
+      <div className="flex flex-wrap items-center gap-2 text-xs">
+        <span className="text-slate-400 font-medium">المعطيات:</span>
+        <div className="flex flex-wrap items-center gap-1.5" dir="ltr">
+          {content.given.map((item, idx) => (
+            <span
+              key={idx}
+              className="px-2 py-0.5 rounded bg-slate-950/80 border border-slate-800/80 text-[11px] font-telemetry text-slate-300"
+            >
+              <span className="text-slate-400 mr-1.5 font-arabic" dir="rtl">
+                {item.label}:
+              </span>
+              <MathText>{item.math}</MathText>
+            </span>
           ))}
-        </ul>
-      </div>
-
-      {/* الشرح */}
-      <div className="mb-3 p-2.5 bg-slate-50 rounded text-xs text-slate-700 leading-relaxed">
-        {content.explanation}
-      </div>
-
-      {/* المفهوم */}
-      <div className="p-2.5 bg-amber-50 border-r-4 border-amber-400 rounded">
-        <div className="text-[11px] font-bold text-amber-700 mb-1">المفهوم المستعمل:</div>
-        <div className="text-sm text-slate-800 font-mono" dir="ltr">
-          {content.concept}
         </div>
       </div>
-    </Card>
+
+      {/* Explanation text */}
+      <p className="text-xs text-slate-300 leading-relaxed font-arabic">
+        {content.explanation}
+      </p>
+    </div>
   );
 }

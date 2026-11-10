@@ -1,0 +1,85 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-10T23:02:30.000Z",
+  "title": "Design System: Free Fall 3D",
+  "extensions": {
+    "colorMeta": {
+      "primary": { "role": "primary", "displayName": "Scientific Sky", "canonical": "#0ea5e9" },
+      "primary-hover": { "role": "primary", "displayName": "Scientific Sky Hover", "canonical": "#38bdf8" },
+      "velocity": { "role": "secondary", "displayName": "Kinematic Velocity Rose", "canonical": "#f43f5e" },
+      "gravity": { "role": "primary", "displayName": "Gravitational Sky", "canonical": "#0ea5e9" },
+      "displacement": { "role": "tertiary", "displayName": "Displacement Amber", "canonical": "#f59e0b" },
+      "surface-canvas": { "role": "neutral", "displayName": "Obsidian Ground", "canonical": "#020617" },
+      "surface-panel": { "role": "neutral", "displayName": "Slate Workstation Panel", "canonical": "#0f172a" },
+      "surface-subpanel": { "role": "neutral", "displayName": "Obsidian Recessed Well", "canonical": "#020617" },
+      "surface-border": { "role": "neutral", "displayName": "Structural Border", "canonical": "#1e293b" },
+      "text-primary": { "role": "neutral", "displayName": "Primary Foreground", "canonical": "#f8fafc" },
+      "text-secondary": { "role": "neutral", "displayName": "Secondary Foreground", "canonical": "#94a3b8" },
+      "text-muted": { "role": "neutral", "displayName": "Muted Foreground", "canonical": "#64748b" },
+      "match-success": { "role": "neutral", "displayName": "Milestone Match Green", "canonical": "#10b981" }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "Primary Arabic headers and titles." },
+      "headline": { "displayName": "Headline", "purpose": "Curriculum problem step headings." },
+      "title": { "displayName": "Title", "purpose": "Tab titles and derivation stages." },
+      "body": { "displayName": "Body", "purpose": "Pedagogical explanations and problem text." },
+      "caption": { "displayName": "Caption", "purpose": "Metadata subtitles and secondary badges (11px)." },
+      "micro": { "displayName": "Micro", "purpose": "Minimal HUD status and unit indicators (10px)." },
+      "math": { "displayName": "Math", "purpose": "Mathematical physics variables and kinematic equations." },
+      "telemetry": { "displayName": "Telemetry", "purpose": "Real-time measurements, timestamps, and graph ticks." }
+    },
+    "shadows": [],
+    "motion": [
+      { "name": "ease-standard", "value": "cubic-bezier(0.4, 0, 0.2, 1)", "purpose": "Standard transitions for interactive controls." }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "640px" },
+      { "name": "md", "value": "768px" },
+      { "name": "lg", "value": "1024px" },
+      { "name": "xl", "value": "1280px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Transport Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Primary action button for playback and simulation control.",
+      "html": "<button class=\"ds-btn-primary\">تشغيل المحاكاة</button>",
+      "css": ".ds-btn-primary { background: #0ea5e9; color: #020617; padding: 6px 16px; font-weight: 600; font-size: 12px; border: none; border-radius: 4px; cursor: pointer; transition: background 0.15s ease; } .ds-btn-primary:hover { background: #38bdf8; }"
+    },
+    {
+      "name": "Workstation Panel",
+      "kind": "card",
+      "refersTo": "card-workstation",
+      "description": "Standard container for curriculum briefing, derivation, and telemetry.",
+      "html": "<div class=\"ds-panel\"><div class=\"ds-panel-header\">لوحة القياسات</div></div>",
+      "css": ".ds-panel { background: #0f172a; border: 1px solid #1e293b; border-radius: 8px; padding: 16px; color: #f8fafc; } .ds-panel-header { font-size: 14px; font-weight: 600; border-bottom: 1px solid #1e293b; padding-bottom: 8px; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "Precision Laboratory Instrument and Modern Scientific Editorial",
+    "overview": "A high-density, rigorous educational physics workstation designed for secondary students and educators studying linear kinematics and free fall under the Iraqi curriculum.",
+    "keyCharacteristics": [
+      "Dark laboratory workstation aesthetic in deep slate and obsidian.",
+      "Chromatic separation of physical roles: Velocity in Rose, Gravity in Sky, Height in Amber.",
+      "Tri-font typographic architecture: Arabic UI, STIX Two Text Math, JetBrains Mono Telemetry.",
+      "Dual-rate cognitive synchronization: 60fps canvas coupled with 15Hz throttled telemetry."
+    ],
+    "rules": [
+      { "name": "The Single-Role Color Rule", "body": "Rose is velocity, Sky is gravity, Amber is height. Never use them for decorative flair.", "section": "colors" },
+      { "name": "The Strict Tabular Rule", "body": "Every variable updating over time must use tabular-nums in JetBrains Mono to prevent jitter.", "section": "typography" },
+      { "name": "The Flat-By-Default Rule", "body": "Surfaces are flat at rest; depth is created by high-contrast tonal stepping rather than blurry shadows.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do isolate mathematical equations in LTR containers with MathText.",
+      "Do keep g = -10 m/s^2, vi = 0, and t = 3.0s immutable across all views.",
+      "Do throttle React UI updates to 15Hz while running Three.js at 60fps."
+    ],
+    "donts": [
+      "Don't use emojis anywhere in the interface or scene overlays.",
+      "Don't use pastel gradients, floating pill badges, or glassmorphic blur effects.",
+      "Don't introduce air resistance, parabolic projectile math, or bouncing mechanics outside textbook Example 3."
+    ]
+  }
+}
