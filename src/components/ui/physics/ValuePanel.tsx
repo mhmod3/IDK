@@ -10,6 +10,7 @@ import { Check } from 'lucide-react';
 import { G } from '@/lib/constants';
 import { velocity, displacement, heightAboveGround } from '@/lib/physics';
 import type { TabId } from '@/hooks/useFreeFall';
+import { MathText } from './MathText';
 
 interface ValuePanelProps {
   t: number;
@@ -57,7 +58,7 @@ export function ValuePanel({ t, activeTab }: ValuePanelProps) {
       color: 'default',
     },
     {
-      label: 'vᵢ',
+      label: 'v_i',
       value: vi.toFixed(0),
       unit: 'm/s',
       matchValue: matches.vi ?? null,
@@ -65,7 +66,7 @@ export function ValuePanel({ t, activeTab }: ValuePanelProps) {
       color: 'default',
     },
     {
-      label: 'vf',
+      label: 'v_f',
       value: vf.toFixed(1),
       unit: 'm/s',
       matchValue: matches.vf ?? null,
@@ -119,8 +120,8 @@ export function ValuePanel({ t, activeTab }: ValuePanelProps) {
               }`}
             >
               <div className="flex items-center gap-2">
-                <span className={`font-bold font-mono text-sm ${colors.fg}`}>
-                  {row.label}
+                <span className={`font-bold text-sm ${colors.fg}`} style={{ fontFamily: 'serif' }}>
+                  <MathText>{row.label}</MathText>
                 </span>
                 <span className="text-slate-400 text-xs">=</span>
                 <span className={`font-mono text-sm ${matched ? 'text-green-700 font-bold' : colors.fg}`}>

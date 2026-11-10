@@ -14,6 +14,8 @@ import { EquationPanel } from '@/components/ui/physics/EquationPanel';
 import { MiniGraph } from '@/components/ui/physics/MiniGraph';
 import { Controls } from '@/components/ui/physics/Controls';
 import { Timeline } from '@/components/ui/physics/Timeline';
+import { QuestionCard } from '@/components/ui/physics/QuestionCard';
+import { MathText } from '@/components/ui/physics/MathText';
 // تحميل Onboarding بدون SSR (يحتاج localStorage)
 const Onboarding = dynamic(
   () => import('@/components/ui/physics/Onboarding').then((m) => m.Onboarding),
@@ -57,11 +59,15 @@ export function FreeFallApp() {
           <div className="flex items-center gap-3 text-xs">
             <div className="hidden md:flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 rounded-full">
               <div className="w-2 h-2 rounded-full bg-blue-500" />
-              <span className="text-slate-700 font-mono">g = −10 m/s²</span>
+              <span className="text-slate-700" dir="ltr">
+                <MathText>g = −10 m/s^2</MathText>
+              </span>
             </div>
             <div className="hidden md:flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 rounded-full">
               <div className="w-2 h-2 rounded-full bg-red-500" />
-              <span className="text-slate-700 font-mono">vᵢ = 0</span>
+              <span className="text-slate-700" dir="ltr">
+                <MathText>v_i = 0</MathText>
+              </span>
             </div>
           </div>
         </div>
@@ -118,8 +124,11 @@ export function FreeFallApp() {
             <MiniGraph t={state.t} />
           </div>
 
-          {/* العمود الجانبي: الشرح + القيم + المعادلة */}
+          {/* العمود الجانبي: السؤال + الشرح + القيم + المعادلة */}
           <div className="flex flex-col gap-3 order-1 lg:order-2 lg:max-h-[calc(100vh-140px)] lg:overflow-y-auto pr-1">
+            {/* نص السؤال كاملاً */}
+            <QuestionCard />
+
             {/* لوحة القيم الحية */}
             <ValuePanel t={state.t} activeTab={state.activeTab} />
 
@@ -142,11 +151,11 @@ export function FreeFallApp() {
         <div className="max-w-[1600px] mx-auto px-4 py-3 text-xs text-slate-500 flex flex-wrap items-center justify-between gap-2">
           <div className="flex items-center gap-3">
             <span>المعادلات الثلاث للسقوط الحر:</span>
-            <span className="font-mono text-slate-700" dir="ltr">vf = g·t</span>
+            <span className="text-slate-700" dir="ltr"><MathText>v_f = g·t</MathText></span>
             <span className="text-slate-300">|</span>
-            <span className="font-mono text-slate-700" dir="ltr">Δy = ½·g·t²</span>
+            <span className="text-slate-700" dir="ltr"><MathText>Δy = ½·g·t^2</MathText></span>
             <span className="text-slate-300">|</span>
-            <span className="font-mono text-slate-700" dir="ltr">vf = √(2·g·Δy)</span>
+            <span className="text-slate-700" dir="ltr"><MathText>v_f = √(2·g·Δy)</MathText></span>
           </div>
           <div className="text-slate-400">
             ملاحظة: g ≈ 9.8 m/s²، يُقرّب في المسائل إلى −10 m/s²

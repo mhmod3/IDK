@@ -20,15 +20,15 @@ export const EQUATION_TAB_1: EquationLayer = {
   general: 'Δy = ½ · g · t²',
   substitution: 'Δy = ½ · (−10) · (3)²',
   result: 'Δy = −45 m   ⟹   h = +45 m',
-  note: 'الإشارة السالبة للإزاحة تعني اتجاهها نحو الأسفل؛ لذلك يكون ارتفاع البناية موجباً. في السقوط الحر تكون vᵢ = 0 دائماً.',
+  note: 'الإشارة السالبة للإزاحة تعني اتجاهها نحو الأسفل؛ لذلك يكون ارتفاع البناية موجباً. في السقوط الحر تكون v_i = 0 دائماً.',
 };
 
 // التبويب 2: سرعة الكرة لحظة الاصطدام
 export const EQUATION_TAB_2: EquationLayer = {
-  general: 'vf = vᵢ + g · t',
-  substitution: 'vf = 0 + (−10) · (3)',
-  result: 'vf = −30 m/s   (نحو الأسفل ↓)',
-  note: 'الإشارة السالبة لـ vf تعني أن اتجاه السرعة نحو الأسفل، وهو الاتجاه نفسه لتعجيل الجاذبية g.',
+  general: 'v_f = v_i + g · t',
+  substitution: 'v_f = 0 + (−10) · (3)',
+  result: 'v_f = −30 m/s   (نحو الأسفل ↓)',
+  note: 'الإشارة السالبة لـ v_f تعني أن اتجاه السرعة نحو الأسفل، وهو الاتجاه نفسه لتعجيل الجاذبية g.',
 };
 
 // التبويب 3: السرعة والارتفاع بعد مرور 1 ثانية
@@ -46,9 +46,9 @@ export const EQUATION_TAB_3: EquationLayerMulti = {
   parts: [
     {
       label: '(أ)',
-      general: 'vf = vᵢ + g · t',
-      substitution: 'vf = 0 + (−10) · (1)',
-      result: 'vf = −10 m/s',
+      general: 'v_f = v_i + g · t',
+      substitution: 'v_f = 0 + (−10) · (1)',
+      result: 'v_f = −10 m/s',
     },
     {
       label: '(ب)',
@@ -68,7 +68,7 @@ export const EQUATION_TAB_3: EquationLayerMulti = {
 
 // نصوص المعادلات الثلاث للسقوط الحر (للمرجعية)
 export const FREE_FALL_EQUATIONS = [
-  { id: 'eq1', formula: 'vf = g · t', note: 'العلاقة بين السرعة اللحظية والزمن' },
-  { id: 'eq2', formula: 'Δy = ½ · g · t²', note: 'العلاقة بين الإزاحة والزمن' },
-  { id: 'eq3', formula: 'vf = √(2 · g · Δy)', note: 'العلاقة بين السرعة والإزاحة' },
+  { id: 'eq1', formula: 'v_f = g · t', note: 'العلاقة بين السرعة اللحظية والزمن' },
+  { id: 'eq2', formula: 'Δy = ½ · g · t^2', note: 'العلاقة بين الإزاحة والزمن' },
+  { id: 'eq3', formula: 'v_f = √(2 · g · Δy)', note: 'العلاقة بين السرعة والإزاحة' },
 ];

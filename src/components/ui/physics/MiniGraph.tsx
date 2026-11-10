@@ -8,6 +8,7 @@
 import { Card } from '@/components/ui/card';
 import { G, T_TOTAL, H_INITIAL } from '@/lib/constants';
 import { velocity, displacement } from '@/lib/physics';
+import { MathText } from './MathText';
 
 interface MiniGraphProps {
   t: number;
@@ -67,7 +68,7 @@ function DisplacementGraph({ t }: { t: number }) {
   return (
     <div>
       <div className="text-xs font-bold text-slate-700 text-center mb-1" dir="ltr">
-        Δy – t
+        <MathText>Δy – t</MathText>
       </div>
       <svg width={WIDTH} height={HEIGHT} className="w-full">
         {/* الشبكة */}
@@ -218,7 +219,7 @@ function VelocityGraph({ t }: { t: number }) {
   return (
     <div>
       <div className="text-xs font-bold text-slate-700 text-center mb-1" dir="ltr">
-        vf – t
+        <MathText>v_f – t</MathText>
       </div>
       <svg width={WIDTH} height={HEIGHT} className="w-full">
         {/* الشبكة */}
@@ -328,7 +329,7 @@ function VelocityGraph({ t }: { t: number }) {
           fontWeight="bold"
           transform={`rotate(-90, 8, ${HEIGHT / 2})`}
         >
-          vf (m/s)
+            v_f (m/s)
         </text>
 
         {/* النقطة المتحركة */}
