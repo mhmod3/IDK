@@ -91,21 +91,28 @@ const slides: Slide[] = [
     body: (
       <div className="space-y-3 text-slate-700 leading-relaxed">
         <p>
-          يمكنك التحكم بزاوية الرؤية بحرّية:
+          يمكنك التحكم بزاوية الرؤية وموضع الكاميرا بحرّية:
         </p>
         <div className="space-y-2">
           <div className="flex items-center gap-3 bg-purple-50 p-3 rounded-lg">
-            <MousePointerClick className="w-6 h-6 text-purple-600 shrink-0" />
+            <span className="text-xl shrink-0">🖱️←</span>
             <div>
-              <strong>السحب بالماوس</strong>
+              <strong>الزر الأيسر للماوس</strong>
               <p className="text-sm text-slate-600">اسحب لتدوير المشهد يميناً ويساراً ولأعلى ولأسفل</p>
             </div>
           </div>
           <div className="flex items-center gap-3 bg-purple-50 p-3 rounded-lg">
-            <span className="text-2xl">🖱️</span>
+            <span className="text-xl shrink-0">🖱️→</span>
+            <div>
+              <strong>الزر الأيمن للماوس</strong>
+              <p className="text-sm text-slate-600">اسحب لتحريك الكاميرا (Pan) في كل الاتجاهات: أعلى، أسفل، يمين، يسار</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-3 bg-purple-50 p-3 rounded-lg">
+            <span className="text-2xl shrink-0">⚙️</span>
             <div>
               <strong>عجلة الماوس</strong>
-              <p className="text-sm text-slate-600">للتقريب والتبعيد من المشهد</p>
+              <p className="text-sm text-slate-600">للتقريب والتبعيد نحو موضع المؤشر</p>
             </div>
           </div>
         </div>

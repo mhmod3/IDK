@@ -84,15 +84,22 @@ export function FreeFallCanvas({
 
         <OrbitControls
           target={CAMERA_TARGET}
-          enablePan={false}
+          enablePan
           enableZoom
           zoomToCursor
+          screenSpacePanning
           minDistance={15}
           maxDistance={80}
           minPolarAngle={Math.PI / 6}
           maxPolarAngle={Math.PI / 2.05}
           enableDamping
           dampingFactor={0.05}
+          // الزر الأيسر = تدوير، الزر الأيمن = تحريك (pan)، العجلة = تقريب
+          mouseButtons={{
+            LEFT: THREE.MOUSE.ROTATE,
+            MIDDLE: THREE.MOUSE.DOLLY,
+            RIGHT: THREE.MOUSE.PAN,
+          }}
         />
 
         {/* الإضاءة */}

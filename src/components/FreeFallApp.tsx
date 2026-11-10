@@ -91,7 +91,7 @@ export function FreeFallApp() {
               />
               {/* تلميح تحكم بالكاميرا */}
               <div className="absolute bottom-3 right-3 bg-white/80 backdrop-blur px-3 py-1.5 rounded-md text-xs text-slate-600 pointer-events-none">
-                🖱️ اسحب للتدوير • عجلة الماوس للتقريب
+                🖱️ زر أيسر: تدوير • زر أيمن: تحريك • عجلة: تقريب
               </div>
               {/* تلميح التبويب */}
               <div className="absolute top-3 left-3 bg-white/80 backdrop-blur px-3 py-1.5 rounded-md text-xs text-slate-700 pointer-events-none font-bold">
