@@ -85,6 +85,8 @@ export function FreeFallCanvas({
         <OrbitControls
           target={CAMERA_TARGET}
           enablePan={false}
+          enableZoom
+          zoomToCursor
           minDistance={15}
           maxDistance={80}
           minPolarAngle={Math.PI / 6}
