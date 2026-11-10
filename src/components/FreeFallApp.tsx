@@ -14,6 +14,11 @@ import { EquationPanel } from '@/components/ui/physics/EquationPanel';
 import { MiniGraph } from '@/components/ui/physics/MiniGraph';
 import { Controls } from '@/components/ui/physics/Controls';
 import { Timeline } from '@/components/ui/physics/Timeline';
+// تحميل Onboarding بدون SSR (يحتاج localStorage)
+const Onboarding = dynamic(
+  () => import('@/components/ui/physics/Onboarding').then((m) => m.Onboarding),
+  { ssr: false }
+);
 
 // تحميل Canvas ديناميكياً (Three.js يعمل على العميل فقط)
 const FreeFallCanvas = dynamic(
@@ -30,6 +35,9 @@ export function FreeFallApp() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100" dir="rtl">
+      {/* دليل البداية التفاعلي */}
+      <Onboarding />
+
       {/* الرأس */}
       <header className="bg-white border-b border-slate-200 shadow-sm">
         <div className="max-w-[1600px] mx-auto px-4 py-3 flex items-center justify-between">
@@ -46,12 +54,12 @@ export function FreeFallApp() {
               </p>
             </div>
           </div>
-          <div className="hidden md:flex items-center gap-3 text-xs">
-            <div className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 rounded-full">
+          <div className="flex items-center gap-3 text-xs">
+            <div className="hidden md:flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 rounded-full">
               <div className="w-2 h-2 rounded-full bg-blue-500" />
               <span className="text-slate-700 font-mono">g = −10 m/s²</span>
             </div>
-            <div className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 rounded-full">
+            <div className="hidden md:flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 rounded-full">
               <div className="w-2 h-2 rounded-full bg-red-500" />
               <span className="text-slate-700 font-mono">vᵢ = 0</span>
             </div>

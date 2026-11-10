@@ -11,7 +11,7 @@ import { useRef, memo, useEffect } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { Text } from '@react-three/drei';
-import { G } from '@/lib/constants';
+import { G, BALL_X, BALL_Z } from '@/lib/constants';
 
 interface SceneLabelsProps {
   tRef: React.MutableRefObject<number>;
@@ -51,7 +51,7 @@ function SceneLabelsImpl({
     const t = tRef.current;
     const ballY = ballYRef.current;
 
-    groupRef.current.position.set(0, ballY, 0);
+    groupRef.current.position.set(BALL_X, ballY, BALL_Z);
 
     const vf = G * t;
     const h = Math.max(0, ballY);

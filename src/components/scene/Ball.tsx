@@ -9,7 +9,7 @@
 import { useRef, useState, useEffect } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
-import { BALL_RADIUS, H_INITIAL, T_TOTAL, G } from '@/lib/constants';
+import { BALL_RADIUS, BALL_X, BALL_Z, H_INITIAL, T_TOTAL, G } from '@/lib/constants';
 
 interface BallProps {
   // الزمن الحالي (s)
@@ -31,7 +31,7 @@ export function Ball({ t: initialT, isPlaying, tRef, onTimeUpdate, onImpact, has
   const impactRef = useRef<THREE.PointLight>(null);
   const [impactPhase, setImpactPhase] = useState<number>(0);
 
-  // موضع الكرة x = 0, z = 0 (ن落ち عمودياً)
+  // موضع الكرة: x و z ثابتان (أمام البناية)، y يتغير مع السقوط
   // y(t) = 45 + ½·g·t² = 45 - 5·t²
   const ballPosition = (time: number): number => H_INITIAL + 0.5 * G * time * time;
 
@@ -81,8 +81,9 @@ export function Ball({ t: initialT, isPlaying, tRef, onTimeUpdate, onImpact, has
       ? Math.sin(impactPhase * Math.PI * 12) * 0.15 * (1 - impactPhase)
       : 0;
 
-    meshRef.current.position.x = shake;
+    meshRef.current.position.x = BALL_X + shake;
     meshRef.current.position.y = Math.max(BALL_RADIUS, newY);
+    meshRef.current.position.z = BALL_Z;
 
     // وميض ضوء الاصطدام
     if (impactRef.current) {
@@ -97,7 +98,7 @@ export function Ball({ t: initialT, isPlaying, tRef, onTimeUpdate, onImpact, has
       {/* الكرة */}
       <mesh
         ref={meshRef}
-        position={[0, H_INITIAL, 0]}
+        position={[BALL_X, H_INITIAL, BALL_Z]}
         castShadow
       >
         <sphereGeometry args={[BALL_RADIUS, 32, 32]} />
@@ -113,7 +114,7 @@ export function Ball({ t: initialT, isPlaying, tRef, onTimeUpdate, onImpact, has
       {/* ضوء اصطدام */}
       <pointLight
         ref={impactRef}
-        position={[0, BALL_RADIUS + 0.5, 0]}
+        position={[BALL_X, BALL_RADIUS + 0.5, BALL_Z]}
         color="#fef3c7"
         intensity={0}
         distance={10}

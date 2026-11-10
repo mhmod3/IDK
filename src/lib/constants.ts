@@ -42,9 +42,14 @@ export const BUILDING_HEIGHT = H_INITIAL; // 45
 // أبعاد الكرة
 export const BALL_RADIUS = 0.6;
 
-// إعدادات الكاميرا
-export const CAMERA_POSITION: [number, number, number] = [22, 30, 38];
-export const CAMERA_TARGET: [number, number, number] = [0, 22, 0];
+// موضع الكرة أفقياً — أمام البناية (لتكون مرئية للطالب طوال السقوط)
+// z = نصف عمق البناية + مسافة بصرية أمام الواجهة
+export const BALL_X = 0;
+export const BALL_Z = BUILDING_DEPTH / 2 + 1.8; // = 3 + 1.8 = 4.8
+
+// إعدادات الكاميرا — معدّلة لتُظهر الكرة بجانب البناية بوضوح
+export const CAMERA_POSITION: [number, number, number] = [24, 28, 42];
+export const CAMERA_TARGET: [number, number, number] = [0, 22, 2];
 
 // القيم المرجعية للنقاط على منحنى v–t (صفحة 42 من الكتاب)
 export const V_T_REFERENCE_POINTS = [

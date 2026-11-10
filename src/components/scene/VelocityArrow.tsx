@@ -8,6 +8,7 @@
 import { useRef, memo } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
+import { BALL_X, BALL_Z } from '@/lib/constants';
 
 interface VelocityArrowProps {
   // الزمن الحالي
@@ -35,8 +36,8 @@ function VelocityArrowImpl({ tRef, ballYRef, visible, scale = 0.1 }: VelocityArr
     // موضع الكرة الحالي
     const ballY = ballYRef.current;
 
-    // السهم يبدأ من الكرة وينزل لأسفل
-    groupRef.current.position.set(0, ballY, 0);
+    // السهم يبدأ من الكرة وينزل لأسفل (على نفس موضع الكرة x,z)
+    groupRef.current.position.set(BALL_X, ballY, BALL_Z);
 
     // تحديث طول العمود
     if (shaftRef.current) {

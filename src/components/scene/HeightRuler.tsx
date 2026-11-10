@@ -11,7 +11,7 @@ import { useRef, useMemo, memo } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { Text } from '@react-three/drei';
-import { H_INITIAL } from '@/lib/constants';
+import { H_INITIAL, BALL_X, BALL_Z } from '@/lib/constants';
 
 interface HeightRulerProps {
   tRef: React.MutableRefObject<number>;
@@ -22,6 +22,7 @@ interface HeightRulerProps {
 function HeightRulerImpl({ tRef, highlightValue = null, visible }: HeightRulerProps) {
   const markerRef = useRef<THREE.Group>(null);
   const labelRef = useRef<THREE.Mesh>(null);
+  const verticalLineRef = useRef<THREE.Mesh>(null);
 
   // حفظ علامات المسطرة في memo لتجنّب إعادة إنشاء المصفوفة
   const marks = useMemo(() => {
@@ -41,6 +42,12 @@ function HeightRulerImpl({ tRef, highlightValue = null, visible }: HeightRulerPr
     // تحديث نص التسمية مباشرة على الميش (بدون إعادة تصيير React)
     if (labelRef.current) {
       (labelRef.current as any).text = `h = ${h.toFixed(1)} m`;
+    }
+
+    // تحديث الخط العمودي تحت الكرة (طوله = h الحالي)
+    if (verticalLineRef.current) {
+      verticalLineRef.current.scale.y = Math.max(0.01, h);
+      verticalLineRef.current.position.y = h / 2;
     }
   });
 
@@ -108,6 +115,22 @@ function HeightRulerImpl({ tRef, highlightValue = null, visible }: HeightRulerPr
           h = ...
         </Text>
       </group>
+
+      {/* خط عمودي تحت الكرة يُظهر ارتفاعها بصرياً */}
+      {/* موضع الكرة: x=0 عالمي = 6.5 محلي (المسطرة عند -6.5)، z=BALL_Z */}
+      <mesh
+        ref={verticalLineRef}
+        position={[6.5 + BALL_X, 0, BALL_Z]}
+      >
+        <boxGeometry args={[0.06, 1, 0.06]} />
+        <meshStandardMaterial
+          color="#f59e0b"
+          emissive="#d97706"
+          emissiveIntensity={0.3}
+          transparent
+          opacity={0.7}
+        />
+      </mesh>
 
       {/* تسمية "h (m)" في الأعلى */}
       <Text

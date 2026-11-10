@@ -8,6 +8,7 @@
 import { useRef, memo } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
+import { BALL_X, BALL_Z } from '@/lib/constants';
 
 interface GravityArrowProps {
   // موضع الكرة y الحالي (السهم يتبع الكرة)
@@ -24,7 +25,7 @@ function GravityArrowImpl({ ballYRef, visible }: GravityArrowProps) {
   useFrame(() => {
     if (!groupRef.current) return;
     // السهم يبدأ من الكرة (إزاحة بسيطة جانبية لتمييزه عن سهم السرعة)
-    groupRef.current.position.set(1.2, ballYRef.current, 0);
+    groupRef.current.position.set(BALL_X + 1.2, ballYRef.current, BALL_Z);
     groupRef.current.visible = visible;
   });
 

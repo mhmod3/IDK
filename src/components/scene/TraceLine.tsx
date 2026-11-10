@@ -8,7 +8,7 @@
 import { useRef, memo } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
-import { H_INITIAL, G } from '@/lib/constants';
+import { H_INITIAL, G, BALL_X, BALL_Z } from '@/lib/constants';
 
 interface TraceLineProps {
   tRef: React.MutableRefObject<number>;
@@ -45,7 +45,7 @@ function TraceLineImpl({ tRef, visible }: TraceLineProps) {
     // أضف النقطة الحالية إذا كانت جديدة
     const lastPoint = tracePoints.current[tracePoints.current.length - 1];
     if (!lastPoint || Math.abs(lastPoint.y - y) > 0.05) {
-      tracePoints.current.push(new THREE.Vector3(0, Math.max(0.6, y), 0));
+      tracePoints.current.push(new THREE.Vector3(BALL_X, Math.max(0.6, y), BALL_Z));
       if (tracePoints.current.length > maxPoints) {
         tracePoints.current.shift();
       }
