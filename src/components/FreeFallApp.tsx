@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import { useFreeFall } from '@/hooks/useFreeFall';
 import { Tabs } from '@/components/ui/physics/Tabs';
@@ -12,12 +12,12 @@ import { Controls } from '@/components/ui/physics/Controls';
 import { Timeline } from '@/components/ui/physics/Timeline';
 import { QuestionCard } from '@/components/ui/physics/QuestionCard';
 import { MathText } from '@/components/ui/physics/MathText';
-import { Onboarding } from '@/components/ui/physics/Onboarding';
+import { GuidedTour, GuidedTourButton, TourStep } from '@/components/ui/physics/GuidedTour';
 import { G, H_INITIAL, T_TOTAL, VI } from '@/lib/constants';
 
-// Load Onboarding without SSR
-const OnboardingModal = dynamic(
-  () => import('@/components/ui/physics/Onboarding').then((m) => m.Onboarding),
+// Load GuidedTour dynamically without SSR
+const GuidedTourModal = dynamic(
+  () => import('@/components/ui/physics/GuidedTour').then((m) => m.GuidedTour),
   { ssr: false }
 );
 
@@ -37,6 +37,26 @@ const FreeFallCanvas = dynamic(
 
 export function FreeFallApp() {
   const { state, actions, tRef, setTimeFromFrame } = useFreeFall();
+  const [isTourOpen, setIsTourOpen] = useState<boolean>(false);
+  const [highlightZone, setHighlightZone] = useState<TourStep['highlightZone']>('center');
+
+  // Check if first-time user once on mount without synchronous set-state violation
+  useEffect(() => {
+    let timer: NodeJS.Timeout | null = null;
+    try {
+      const seen = localStorage.getItem('free-fall-guided-tour-seen-v1');
+      if (!seen) {
+        timer = setTimeout(() => {
+          setIsTourOpen(true);
+        }, 150);
+      }
+    } catch {
+      // ignore
+    }
+    return () => {
+      if (timer) clearTimeout(timer);
+    };
+  }, []);
 
   const handleStepDelta = (delta: number) => {
     actions.setTime(state.t + delta);
@@ -48,12 +68,16 @@ export function FreeFallApp() {
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 font-sans flex flex-col selection:bg-sky-500/30 selection:text-sky-200" dir="rtl">
-      {/* Interactive Onboarding */}
-      <OnboardingModal />
+      {/* Interactive Guided Tour */}
+      <GuidedTourModal
+        isOpen={isTourOpen}
+        onClose={() => setIsTourOpen(false)}
+        onHighlightChange={(zone) => setHighlightZone(zone)}
+      />
 
       {/* Top Laboratory Station Header */}
       <header className="border-b border-slate-800/60 bg-slate-950/80 sticky top-0 z-30 backdrop-blur">
-        <div className="max-w-[1720px] mx-auto px-4 py-2.5 flex items-center justify-between gap-3">
+        <div className="max-w-[1720px] mx-auto px-4 py-2 flex items-center justify-between gap-3">
           {/* Identity & Textbook Metadata */}
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 rounded bg-slate-900 border border-slate-800 flex items-center justify-center text-sky-400/90 font-math text-base font-semibold">
@@ -74,13 +98,17 @@ export function FreeFallApp() {
             </div>
           </div>
 
-          {/* Curriculum Parameters Summary */}
-          <div className="flex items-center gap-2 text-[11px] font-telemetry text-slate-400" dir="ltr">
-            <span>g = {G} m/s²</span>
-            <span className="text-slate-700">•</span>
-            <span>H = {H_INITIAL} m</span>
-            <span className="text-slate-700">•</span>
-            <span>t = {T_TOTAL} s</span>
+          {/* Action Trigger & Curriculum Parameters Summary */}
+          <div className="flex items-center gap-3">
+            <GuidedTourButton onTrigger={() => setIsTourOpen(true)} />
+
+            <div className="hidden sm:flex items-center gap-2 text-[11px] font-telemetry text-slate-400 border-r border-slate-800/80 pr-3 mr-1" dir="ltr">
+              <span>g = {G} m/s²</span>
+              <span className="text-slate-700">•</span>
+              <span>H = {H_INITIAL} m</span>
+              <span className="text-slate-700">•</span>
+              <span>t = {T_TOTAL} s</span>
+            </div>
           </div>
         </div>
       </header>
@@ -91,7 +119,13 @@ export function FreeFallApp() {
           {/* Left Column: 3D Simulation Viewport + Controls + Graphs */}
           <div className="flex flex-col gap-3 order-2 lg:order-1">
             {/* 3D Viewport Box */}
-            <div className="relative h-[48vh] sm:h-[55vh] lg:h-[58vh] min-h-[380px] rounded-lg overflow-hidden border border-slate-800/80 bg-slate-950 shadow-inner">
+            <div
+              className={`relative h-[48vh] sm:h-[55vh] lg:h-[58vh] min-h-[380px] rounded-lg overflow-hidden border bg-slate-950 shadow-inner transition-all duration-300 ${
+                isTourOpen && highlightZone === 'viewport'
+                  ? 'border-sky-400 ring-2 ring-sky-400/30'
+                  : 'border-slate-800/80'
+              }`}
+            >
               <FreeFallCanvas
                 t={state.t}
                 isPlaying={state.isPlaying}
@@ -131,7 +165,13 @@ export function FreeFallApp() {
             </div>
 
             {/* Unified Simulation Transport Dock */}
-            <div className="bg-slate-900 border border-slate-800/80 rounded-lg p-2.5 space-y-2">
+            <div
+              className={`bg-slate-900 border rounded-lg p-2.5 space-y-2 transition-all duration-300 ${
+                isTourOpen && highlightZone === 'dock'
+                  ? 'border-sky-400 ring-2 ring-sky-400/30'
+                  : 'border-slate-800/80'
+              }`}
+            >
               <Timeline t={state.t} onTimeChange={actions.setTime} />
               <Controls
                 isPlaying={state.isPlaying}
@@ -156,7 +196,13 @@ export function FreeFallApp() {
             <Tabs activeTab={state.activeTab} onTabChange={actions.setTab} />
 
             {/* Integrated Solution Studio: Concept & Mathematical Derivation */}
-            <div className="bg-slate-900 border border-slate-800/80 rounded-lg p-3.5 space-y-3">
+            <div
+              className={`bg-slate-900 border rounded-lg p-3.5 space-y-3 transition-all duration-300 ${
+                isTourOpen && highlightZone === 'tabs'
+                  ? 'border-sky-400 ring-2 ring-sky-400/30'
+                  : 'border-slate-800/80'
+              }`}
+            >
               <StepPanel activeTab={state.activeTab} />
               <div className="border-t border-slate-800/60 pt-3">
                 <EquationPanel
@@ -169,7 +215,15 @@ export function FreeFallApp() {
             </div>
 
             {/* Real-time Telemetry Readout */}
-            <ValuePanel t={state.t} activeTab={state.activeTab} />
+            <div
+              className={`rounded-lg transition-all duration-300 ${
+                isTourOpen && highlightZone === 'telemetry'
+                  ? 'ring-2 ring-sky-400/40'
+                  : ''
+              }`}
+            >
+              <ValuePanel t={state.t} activeTab={state.activeTab} />
+            </div>
           </div>
         </div>
       </main>
