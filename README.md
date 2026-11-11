@@ -1,10 +1,11 @@
 ## ملاحظة مهمة جدا جدا:
 <details>
-<summary>👈 اضغط هنا لعرض النص</summary>
+<summary>اضغط</summary>
 
 اريد درجات
 
 </details>
+
 ## التشغيل محلياً
 
 ```bash
