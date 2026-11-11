@@ -1,5 +1,10 @@
 ## ملاحظة مهمة جدا جدا:
-<span title="اضغط لعرض النص" style="background:#000; color:#000;">اريد درجات</span>
+<details>
+<summary>👈 اضغط هنا لعرض النص</summary>
+
+اريد درجات
+
+</details>
 ## التشغيل محلياً
 
 ```bash
