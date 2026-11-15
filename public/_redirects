@@ -1,0 +1,5 @@
+# Cloudflare Pages redirects/rewrites
+# راجع https://developers.cloudflare.com/pages/configuration/redirects/
+
+# لا حاجة لإعادة توجيه SPA مع وضع `output: 'export'` و `trailingSlash: true`
+# لأن Next.js يُنتج ملف HTML لكل مسار. هذا الملف موجود كـ fallback فقط.

@@ -1,0 +1,19 @@
+# ترويسات Cloudflare Pages — راجع https://developers.cloudflare.com/pages/configuration/headers/
+
+# أصول Next.js الثابتة: تخزين دائم لأنها مُوقَّعة بـ content hash
+/_next/static/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# الخطوط المُجمَّعة من next/font: ثابتة عبر النشرات
+/_next/static/media/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# ملفات الأيقونات والشعارات
+/*.svg
+  Cache-Control: public, max-age=86400
+
+# إعدادات الأمان العامة
+/*
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  Referrer-Policy: strict-origin-when-cross-origin

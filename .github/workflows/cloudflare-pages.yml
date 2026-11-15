@@ -1,0 +1,50 @@
+name: Deploy to Cloudflare Pages
+
+# ينشر الموقع تلقائياً على Cloudflare Pages عند كل دمج لـ main،
+# وعند فتح Pull Requests (بيئة معاينة). يمكن تشغيله يدوياً أيضاً.
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  deployments: write
+
+jobs:
+  deploy:
+    name: Build & Deploy (static export)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build static export for Cloudflare Pages
+        run: npm run build:pages
+        env:
+          DEPLOY_TARGET: pages
+          NEXT_TELEMETRY_DISABLED: '1'
+
+      - name: Verify build output
+        run: |
+          test -d ./out || { echo "::error::مجلد out/ غير موجود — تأكد من ضبط output: 'export'"; exit 1; }
+          echo "::notice::تم بناء الموقع بنجاح في ./out"
+          ls -la ./out | head -20
+
+      - name: Publish to Cloudflare Pages
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+          command: pages deploy ./out --project-name=${{ vars.CLOUDFLARE_PAGES_PROJECT || 'idk-free-fall' }}
