@@ -10,7 +10,10 @@
     "db:push": "prisma db push --accept-data-loss",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
-    "db:reset": "prisma migrate reset"
+    "db:reset": "prisma migrate reset",
+    "build:pages": "cross-env DEPLOY_TARGET=pages next build",
+    "pages:preview": "npm run build:pages && npx wrangler pages deploy ./out --dry-run",
+    "pages:deploy": "npm run build:pages && npx wrangler pages deploy ./out"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",

@@ -18,6 +18,64 @@ npm run dev
 # فتح المتصفح على http://localhost:3000
 ```
 
+## النشر على Cloudflare Pages
+
+الموقع يدعم **النشر الثابت** (static export) على Cloudflare Pages خارج الصندوق،
+دون أي محوّلات (adapters) مثل `@cloudflare/next-on-pages` أو `@opennextjs/cloudflare`.
+كل ما في التطبيق يعمل بالكامل على العميل (مشهد three.js + React 19)،
+لذلك لا حاجة لخادم Node.js أثناء التشغيل.
+
+### الطريقة 1: النشر التلقائي عبر GitHub Actions (موصى بها)
+
+1. أنشئ مشروع Cloudflare Pages باسم `idk-free-fall` (أو أي اسم تريده) من لوحة Cloudflare.
+2. احصل على **API Token** بصلاحية `Cloudflare Pages: Edit` من
+   [Cloudflare Dashboard → My Profile → API Tokens](https://dash.cloudflare.com/profile/api-tokens).
+3. في مستودع GitHub: **Settings → Secrets and variables → Actions**، أضف:
+
+   | Secret | القيمة |
+   |---|---|
+   | `CLOUDFLARE_API_TOKEN` | رمز الوصول من الخطوة 2 |
+   | `CLOUDFLARE_ACCOUNT_ID` | معرّف حسابك (تجده في يمين لوحة Cloudflare) |
+
+4. (اختياري) إذا اخترت اسماً غير `idk-free-fall`، أضف **variable** (وليس secret) باسم
+   `CLOUDFLARE_PAGES_PROJECT` وقيمته اسم مشروعك.
+
+5. ادفع أي commit إلى `main` — سيقوم [workflow](.github/workflows/cloudflare-pages.yml)
+   بالبناء والنشر تلقائياً. عند فتح PR ستحصل على **رابط معاينة** مؤقت.
+
+### الطريقة 2: النشر اليدوي عبر Wrangler
+
+```bash
+# تسجيل دخول مرة واحدة
+npx wrangler login
+
+# بناء نسخة ثابتة + رفعها إلى Cloudflare Pages
+npm run pages:deploy
+
+# أو معاينة محلية قبل الرفع
+npm run pages:preview
+```
+
+### الطريقة 3: ربط المستودع من لوحة Cloudflare Pages
+
+1. Cloudflare Dashboard → **Workers & Pages → Create → Pages → Connect to Git**
+2. اختر مستودع `mhmod3/IDK` والفرع `main`.
+3. في **Build settings** اضبط:
+
+   | الإعداد | القيمة |
+   |---|---|
+   | Framework preset | `Next.js (Static HTML Export)` |
+   | Build command | `npm run build:pages` |
+   | Build output directory | `out` |
+   | Environment variables | `DEPLOY_TARGET` = `pages` |
+
+4. اضغط **Save and Deploy**.
+
+> **ملاحظة:** الوضع الافتراضي للبناء (`npm run build`) يبقى كما هو (`output: 'standalone'`)
+> للاستخدام على VPS / Docker عبر `bun .next/standalone/server.js`. وضع Pages يُفعَّل فقط عند ضبط
+> `DEPLOY_TARGET=pages` أو استخدام سكربت `npm run build:pages`.
+
+
 # المثال 3 — السقوط الحر | موقع تفاعلي ثلاثي الأبعاد
 
 موقع تعليمي تفاعلي ثلاثي الأبعاد لشرح **المثال 3** (السقوط الحر) من الفصل الثاني (الحركة الخطية) في كتاب الفيزياء للصف الخامس العلمي، صفحة 42.
