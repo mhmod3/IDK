@@ -1,8 +1,6 @@
 // ============================================================
-// SceneLabels — تسميات Text فوق الكرة
-// تُظهر: t, vf, h, g (محدّثة لحظياً)
-// يستعمل Text من drei (يُرسم في الفضاء 3D) بدلاً من Html
-// لتجنّب race condition في React portals
+// SceneLabels — تسميات Text ثلاثية الأبعاد تتبع الكرة
+// تُظهر: t, vf (المتجه), |v| (المقدار), h, g
 // ============================================================
 
 'use client';
@@ -40,7 +38,6 @@ function SceneLabelsImpl({
   const hLabelRef = useRef<THREE.Mesh>(null);
   const impactLabelRef = useRef<THREE.Mesh>(null);
 
-  // مرجع لقيم showImpactLabel (للاستعمال داخل useFrame)
   const showImpactRef = useRef<boolean>(showImpactLabel);
   useEffect(() => {
     showImpactRef.current = showImpactLabel;
@@ -54,14 +51,14 @@ function SceneLabelsImpl({
     groupRef.current.position.set(BALL_X, ballY, BALL_Z);
 
     const vf = G * t;
+    const speed = Math.abs(vf);
     const h = Math.max(0, ballY);
 
-    // تحديث النصوص مباشرة على الميشات (بدون إعادة تصيير React)
     if (tLabelRef.current) {
       (tLabelRef.current as any).text = `t = ${t.toFixed(2)} s`;
     }
     if (vLabelRef.current) {
-      (vLabelRef.current as any).text = `vf = ${vf.toFixed(1)} m/s`;
+      (vLabelRef.current as any).text = `vf = ${vf.toFixed(1)} m/s (|v|=${speed.toFixed(0)})`;
     }
     if (hLabelRef.current) {
       (hLabelRef.current as any).text = `h = ${h.toFixed(1)} m`;
@@ -127,14 +124,14 @@ function SceneLabelsImpl({
           anchorX="left"
           anchorY="middle"
         >
-          g = -10 m/s²
+          g = -10 m/s² (↓)
         </Text>
       )}
       {showImpactLabel && (
         <Text
           ref={impactLabelRef}
           position={[0, -2.5, 0]}
-          fontSize={0.9}
+          fontSize={0.85}
           color="#ffffff"
           backgroundColor="#dc2626"
           backgroundPadding={[0.4, 0.25]}

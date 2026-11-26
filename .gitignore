@@ -58,7 +58,6 @@ server.log
 .zscripts/
 .z-ai-config
 agent-ctx/
-tests/
 download/
 upload/
 # Database files

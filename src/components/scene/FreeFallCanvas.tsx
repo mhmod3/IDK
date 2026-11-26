@@ -1,11 +1,10 @@
 // ============================================================
-// FreeFallCanvas — الحاوية الرئيسية لمشهد ثلاثي الأبعاد
-// تجمع: Canvas + الإضاءة + الكاميرا + كل العناصر
+// FreeFallCanvas — الحاوية الرئيسية لمشهد السقوط الحر ثلاثي الأبعاد
 // ============================================================
 
 'use client';
 
-import { Suspense, useRef } from 'react';
+import { Suspense, useRef, useEffect } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, PerspectiveCamera } from '@react-three/drei';
 import * as THREE from 'three';
@@ -21,6 +20,7 @@ import { TraceLine } from './TraceLine';
 import { SceneLabels } from './SceneLabels';
 
 import { CAMERA_POSITION, CAMERA_TARGET, H_INITIAL } from '@/lib/constants';
+import { ballY } from '@/lib/physics';
 import type { TabId } from '@/hooks/useFreeFall';
 
 interface FreeFallCanvasProps {
@@ -31,6 +31,7 @@ interface FreeFallCanvasProps {
   onImpact?: () => void;
   hasReset: boolean;
   activeTab: TabId;
+  solutionStep: number;
 }
 
 export function FreeFallCanvas({
@@ -41,26 +42,24 @@ export function FreeFallCanvas({
   onImpact,
   hasReset,
   activeTab,
+  solutionStep,
 }: FreeFallCanvasProps) {
-  // مرجع لموضع الكرة (يُشارك مع الأسهم والتسميات)
   const ballYRef = useRef<number>(H_INITIAL);
 
-  // تحديث ballYRef كل إطار من داخل Ball (يُمرَّر عبر callback)
   const handleBallPosition = (y: number) => {
     ballYRef.current = y;
   };
 
-  // تحكم بصري حسب التبويب
-  const showVelocityArrow = activeTab !== 1 || t > 0; // في التبويب 1 يظهر فقط بعد بدء الحركة
+  const showVelocityArrow = true;
   const showGravityArrow = true;
   const showHeightRuler = true;
-  const showTrace = activeTab !== 1 || t > 0;
+  const showTrace = true;
   const showImpactLabel = activeTab === 2;
 
-  // قيمة التمييز على المسطرة
+  // Ruler highlight only when solution is revealed or in active target time
   const rulerHighlight =
-    activeTab === 1 ? 45 :
-    activeTab === 3 ? 40 :
+    activeTab === 1 && solutionStep >= 3 ? 45 :
+    activeTab === 3 && solutionStep >= 3 ? 40 :
     null;
 
   return (
@@ -94,7 +93,6 @@ export function FreeFallCanvas({
           maxPolarAngle={Math.PI / 2.05}
           enableDamping
           dampingFactor={0.05}
-          // الزر الأيسر = تدوير، الزر الأيمن = تحريك (pan)، العجلة = تقريب
           mouseButtons={{
             LEFT: THREE.MOUSE.ROTATE,
             MIDDLE: THREE.MOUSE.DOLLY,
@@ -102,8 +100,8 @@ export function FreeFallCanvas({
           }}
         />
 
-        {/* الإضاءة */}
-        <ambientLight intensity={0.6} />
+        {/* Lighting */}
+        <ambientLight intensity={0.65} />
         <hemisphereLight
           color="#cde3f5"
           groundColor="#86a361"
@@ -122,17 +120,17 @@ export function FreeFallCanvas({
           shadow-camera-bottom={-50}
         />
 
-        {/* السماء والضباب */}
+        {/* Sky & Fog */}
         <Sky />
 
-        {/* الأرض والمبنى */}
+        {/* Ground & Building */}
         <Ground />
         <Building highlight={activeTab === 1} />
 
-        {/* الأثر */}
+        {/* Fall trajectory trace */}
         <TraceLine tRef={tRef} visible={showTrace} />
 
-        {/* الكرة */}
+        {/* Ball */}
         <BallUpdater
           t={t}
           isPlaying={isPlaying}
@@ -143,7 +141,7 @@ export function FreeFallCanvas({
           onBallY={handleBallPosition}
         />
 
-        {/* الأسهم */}
+        {/* Vectors */}
         <VelocityArrow
           tRef={tRef}
           ballYRef={ballYRef}
@@ -154,31 +152,27 @@ export function FreeFallCanvas({
           visible={showGravityArrow}
         />
 
-        {/* المسطرة */}
+        {/* Height ruler */}
         <HeightRuler
           tRef={tRef}
           highlightValue={rulerHighlight}
           visible={showHeightRuler}
         />
 
-        {/* التسميات */}
+        {/* 3D Scene HUD Labels */}
         <SceneLabels
           tRef={tRef}
           ballYRef={ballYRef}
           showTime
-          showVelocity={activeTab !== 1 || t > 0}
-          showHeight={activeTab === 1 || activeTab === 3}
-          showGravity={activeTab === 2}
+          showVelocity
+          showHeight
+          showGravity
           showImpactLabel={showImpactLabel}
         />
       </Suspense>
     </Canvas>
   );
 }
-
-// مكوّن داخلي لتحديث ballYRef داخل useFrame الخاص بالكرة
-import { useEffect } from 'react';
-import { ballY } from '@/lib/physics';
 
 function BallUpdater({
   t,
@@ -197,7 +191,6 @@ function BallUpdater({
   hasReset: boolean;
   onBallY: (y: number) => void;
 }) {
-  // تحديث ballYRef كلما تغيّر t
   useEffect(() => {
     onBallY(ballY(t));
   }, [t, onBallY]);
