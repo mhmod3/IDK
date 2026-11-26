@@ -1,36 +1,6 @@
 import type { Metadata } from "next";
-import { Cairo, IBM_Plex_Sans_Arabic, JetBrains_Mono, STIX_Two_Text } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
-
-const cairo = Cairo({
-  variable: "--font-cairo",
-  subsets: ["arabic", "latin"],
-  weight: ["400", "500", "600", "700"],
-  display: "swap",
-});
-
-const ibmPlexArabic = IBM_Plex_Sans_Arabic({
-  variable: "--font-ibm-arabic",
-  subsets: ["arabic", "latin"],
-  weight: ["400", "500", "600", "700"],
-  display: "swap",
-});
-
-const jetbrainsMono = JetBrains_Mono({
-  variable: "--font-jetbrains-mono",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  display: "swap",
-});
-
-const stixMath = STIX_Two_Text({
-  variable: "--font-stix-math",
-  subsets: ["latin"],
-  weight: ["400", "600", "700"],
-  style: ["normal", "italic"],
-  display: "swap",
-});
 
 export const metadata: Metadata = {
   title: "المثال 3 - السقوط الحر | فيزياء الصف الخامس علمي",
@@ -56,7 +26,6 @@ export default function RootLayout({
     <html
       lang="ar"
       dir="rtl"
-      className={`${cairo.variable} ${ibmPlexArabic.variable} ${jetbrainsMono.variable} ${stixMath.variable}`}
       suppressHydrationWarning
     >
       <body className="antialiased bg-slate-950 text-slate-100 font-sans selection:bg-sky-500/20 selection:text-sky-300">
@@ -66,3 +35,4 @@ export default function RootLayout({
     </html>
   );
 }
+

@@ -3,39 +3,51 @@
 import React from 'react';
 import type { TabId } from '@/hooks/useFreeFall';
 import { MathText } from './MathText';
+import { CheckCircle2, HelpCircle } from 'lucide-react';
 
 interface TabsProps {
   activeTab: TabId;
+  solutionStep?: number;
   onTabChange: (tab: TabId) => void;
 }
 
-const TABS: Array<{
+interface TabDef {
   id: TabId;
   stepNum: string;
   label: string;
-  targetExpr: string;
-}> = [
+  targetSymbol: string;
+  solvedExpr: string;
+  maxStep: number;
+}
+
+const TABS: TabDef[] = [
   {
     id: 1,
     stepNum: 'المطلب الأول',
     label: 'ارتفاع البناية',
-    targetExpr: 'h = +45 m',
+    targetSymbol: 'H = ؟',
+    solvedExpr: 'H = +45 m',
+    maxStep: 3,
   },
   {
     id: 2,
     stepNum: 'المطلب الثاني',
     label: 'سرعة الاصطدام',
-    targetExpr: 'v_f = −30 m/s',
+    targetSymbol: 'v_f = ؟',
+    solvedExpr: 'v_f = −30 m/s',
+    maxStep: 3,
   },
   {
     id: 3,
     stepNum: 'المطلب الثالث',
-    label: 'السرعة والارتفاع بعد 1s',
-    targetExpr: 'v_f = −10 m/s',
+    label: 'الحالة بعد مرور 1s',
+    targetSymbol: 'v_f , h = ؟',
+    solvedExpr: 'v_f = −10, h = 40',
+    maxStep: 4,
   },
 ];
 
-export function Tabs({ activeTab, onTabChange }: TabsProps) {
+export function Tabs({ activeTab, solutionStep = 0, onTabChange }: TabsProps) {
   return (
     <nav
       aria-label="مطالب المسألة"
@@ -44,6 +56,8 @@ export function Tabs({ activeTab, onTabChange }: TabsProps) {
     >
       {TABS.map((tab) => {
         const isActive = activeTab === tab.id;
+        const isSolved = isActive && solutionStep >= tab.maxStep;
+
         return (
           <button
             key={tab.id}
@@ -51,7 +65,7 @@ export function Tabs({ activeTab, onTabChange }: TabsProps) {
             onClick={() => onTabChange(tab.id)}
             className={`flex flex-col items-start text-right p-2.5 rounded transition-colors duration-150 cursor-pointer ${
               isActive
-                ? 'bg-slate-800/90 border border-slate-700/80 text-white'
+                ? 'bg-slate-800/90 border border-slate-700/80 text-white shadow-sm'
                 : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/30 border border-transparent'
             }`}
           >
@@ -60,17 +74,29 @@ export function Tabs({ activeTab, onTabChange }: TabsProps) {
                 {tab.stepNum}
               </span>
               <span
-                className={`text-[10px] px-1.5 py-0.2 rounded border font-telemetry ${
-                  isActive
+                className={`text-[10px] px-1.5 py-0.5 rounded border font-telemetry flex items-center gap-1 ${
+                  isSolved
+                    ? 'border-emerald-500/40 text-emerald-300 bg-emerald-950/30'
+                    : isActive
                     ? 'border-sky-500/30 text-sky-300 bg-sky-950/30'
                     : 'border-slate-800 text-slate-400 bg-slate-950/60'
                 }`}
                 dir="ltr"
               >
-                <MathText>{tab.targetExpr}</MathText>
+                {isSolved ? (
+                  <>
+                    <CheckCircle2 className="w-2.5 h-2.5 text-emerald-400" />
+                    <MathText>{tab.solvedExpr}</MathText>
+                  </>
+                ) : (
+                  <>
+                    <HelpCircle className="w-2.5 h-2.5 text-sky-400/70" />
+                    <MathText>{tab.targetSymbol}</MathText>
+                  </>
+                )}
               </span>
             </div>
-            <span className="text-xs font-medium text-slate-200">
+            <span className="text-xs font-semibold text-slate-200">
               {tab.label}
             </span>
           </button>

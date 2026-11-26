@@ -3,20 +3,13 @@
 import React, { useState, useEffect } from 'react';
 import {
   Compass,
-  Play,
-  RotateCcw,
-  Layers,
   ChevronLeft,
   ChevronRight,
   X,
   Sparkles,
-  HelpCircle,
-  Eye,
-  Sliders,
 } from 'lucide-react';
-import { MathText } from '@/components/ui/physics/MathText';
 
-const STORAGE_KEY = 'free-fall-guided-tour-seen-v1';
+const STORAGE_KEY = 'free-fall-guided-tour-seen-v2';
 
 export type TourStepId = 'intro' | 'scene3d' | 'controls' | 'curriculum' | 'telemetry';
 
@@ -36,12 +29,12 @@ const TOUR_STEPS: TourStep[] = [
     id: 'intro',
     targetId: 'tour-header',
     title: 'مختبر السقوط الحر: المثال 3',
-    tagline: 'كتاب الفيزياء (الصف الخامس العلمي) ص 42',
+    tagline: 'كتاب الفيزياء (الصف الخامس العلمي) الفصل الثاني - ص 42',
     description:
-      'أهلاً بك يا بطل! تم تصميم هذا المختبر ليحول مسألة السقوط الحر من مجرد أرقام جافة إلى تجربة حية تراها وتتحكم بكل ثانية فيها.',
-    actionTip: 'المسألة: سقطت كرة من قمة بناية واستغرقت 3 ثوانٍ حتى ارتطمت بالأرض.',
+      'أهلاً بك! تم تصميم هذا المختبر ليحول مسألة السقوط الحر من مجرد أرقام جافة إلى تجربة فيزيائية حية تفاعلية تفهم من خلالها كل خطوة وإشارة فيزيائية.',
+    actionTip: 'المسألة: سقطت كرة من السكون من قمة بناية واستغرقت 3 ثوانٍ حتى ارتطمت بالأرض، والمطلوب حساب ارتفاع البناية والسرعات.',
     highlightZone: 'center',
-    badge: 'البداية',
+    badge: 'المقدمة',
   },
   {
     id: 'scene3d',
@@ -49,8 +42,8 @@ const TOUR_STEPS: TourStep[] = [
     title: 'المشهد التفاعلي والمتجهات',
     tagline: 'راقب حركة الكرة وتغير المتجهات لحظياً',
     description:
-      'المبنى بارتفاع 45 متراً. الكرة تسقط من السكون. السهم الأحمر يمثل متجه السرعة vf ويزداد طوله نزولاً، بينما السهم الأزرق هو تعجيل الجاذبية g الثابت نحو الأسفل.',
-    actionTip: 'يمكنك تدوير الكاميرا بالماوس، وتحريكها بالزر الأيمن، والتقريب بالعجلة.',
+      'الكرة تسقط من السكون (vᵢ = 0). السهم الأحمر يمثل متجه السرعة vf ويزداد طوله نزولاً نحو الأسفل، بينما السهم الأزرق هو تعجيل الجاذبية g الثابت نحو الأسفل (−10 m/s²).',
+    actionTip: 'اعتمدنا المحور الرأسي (+y ↑) موجباً للأعلى، لذلك فإن جميع المتجهات المتجهة للأسفل تظهر بإشارة سالبة (−).',
     highlightZone: 'viewport',
     badge: 'فضاء 3D',
   },
@@ -60,8 +53,8 @@ const TOUR_STEPS: TourStep[] = [
     title: 'غرفة التحكم والشريط الزمني',
     tagline: 'أنت المتحكم في سريان الوقت',
     description:
-      'شغل السقوط لترى الحركة في الوقت الحقيقي، أو اسحب الشريط الزمني للتوقف عند أي لحظة بين 0 و 3 ثوانٍ لفحص الحالة الفيزيائية بدقة.',
-    actionTip: 'جرب أزرار الإيقاف والخطوة و«إعادة الكرة للقمة» في أي وقت.',
+      'شغّل السقوط لترى الحركة في الوقت الحقيقي، أو اسحب الشريط الزمني للتوقف عند أي لحظة بين 0 و 3 ثوانٍ لفحص الحالة الفيزيائية بدقة.',
+    actionTip: 'استخدم أزرار الانتقال السريع (0s، 1.0s، 3.0s) للذهاب مباشرة إلى اللحظات الزمنية المذكورة في مطالب المسألة.',
     highlightZone: 'dock',
     badge: 'شريط الزمن',
   },
@@ -69,10 +62,10 @@ const TOUR_STEPS: TourStep[] = [
     id: 'curriculum',
     targetId: 'tour-solution-studio',
     title: 'مطالب المسألة وخطوات الحل',
-    tagline: 'التبويبات الثلاثة المنهجية',
+    tagline: 'التسلسل التربوي والاشتقاق الرياضي',
     description:
-      'اختر المطلب: (1) ارتفاع البناية، (2) سرعة الاصطدام، أو (3) الحالة بعد ثانية واحدة. ثم اضغط «اعرض الحل» لتكشف القانون والتعويض والناتج خطوة بخطوة.',
-    actionTip: 'يكشف زر الحل التعويض الجبري بالتدريج لترسيخ خطوات الامتحان.',
+      'تنقل بين المطالب الثلاثة: (1) حساب ارتفاع البناية، (2) سرعة الاصطدام، (3) الحالة بعد ثانية واحدة. يمكنك تجربة وضع "حاول بنفسك" أو كشف خطوات الحل خطوة بخطوة.',
+    actionTip: 'يوضح كل مطلب: المطلوب ← المعطيات ← سبب اختيار القانون ← التعويض ← النتيجة والتفسير الفيزيائي.',
     highlightZone: 'tabs',
     badge: 'خطوات الحل',
   },
@@ -80,10 +73,10 @@ const TOUR_STEPS: TourStep[] = [
     id: 'telemetry',
     targetId: 'tour-telemetry-panel',
     title: 'لوحة القياسات الآنية (Telemetry)',
-    tagline: 'أرقامك الحية مطابقة تماماً للمنهج',
+    tagline: 'الربط المباشر بين الرياضيات والحركة',
     description:
-      'راقب عدادات الزمن، الإزاحة، الارتفاع المتبقي، والسرعة اللحظية. عندما تصل الكرة إلى اللحظة المستهدفة للمطلب، ستضيء الخانة باللون الأخضر تأكيداً للحل.',
-    actionTip: 'لاحظ كيف تظل السرعة سالبة لأن اتجاهها نحو الأسفل.',
+      'راقب عدادات الزمن، الإزاحة (Δy)، الارتفاع المتبقي (h)، والسرعة المتجهة (vf) ومقدارها (|v|). تبرز الخانات باللون الأزرق لتأكيد مطابقة شروط المسألة.',
+    actionTip: 'لاحظ الفرق دائماً بين الإزاحة السالبة (−45m) وارتفاع البناية الموجب (+45m).',
     highlightZone: 'telemetry',
     badge: 'العدادات اللحظية',
   },
@@ -139,19 +132,16 @@ export function GuidedTour({ isOpen, onClose, onHighlightChange }: GuidedTourPro
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/75 backdrop-blur-sm transition-all"
+      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/80 backdrop-blur-sm transition-all"
       dir="rtl"
       onClick={handleComplete}
     >
-      {/* Interactive Card */}
       <div
         className="relative max-w-xl w-full bg-slate-900 border border-slate-800 rounded-xl shadow-2xl overflow-hidden flex flex-col animate-in fade-in zoom-in-95 duration-200"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Top Accent Band */}
         <div className="h-1 bg-gradient-to-r from-sky-500 via-amber-400 to-rose-500" />
 
-        {/* Modal Header */}
         <div className="px-5 py-3.5 border-b border-slate-800/80 bg-slate-950/90 flex items-center justify-between gap-3">
           <div className="flex items-center gap-2.5">
             <div className="w-7 h-7 rounded bg-sky-500/10 border border-sky-500/30 flex items-center justify-center text-sky-400">
@@ -182,9 +172,7 @@ export function GuidedTour({ isOpen, onClose, onHighlightChange }: GuidedTourPro
           </div>
         </div>
 
-        {/* Modal Body */}
         <div className="p-5 sm:p-6 space-y-4">
-          {/* Step Title & Tagline */}
           <div>
             <h2 className="text-base sm:text-lg font-bold text-white font-arabic tracking-tight mb-1">
               {step.title}
@@ -194,21 +182,18 @@ export function GuidedTour({ isOpen, onClose, onHighlightChange }: GuidedTourPro
             </p>
           </div>
 
-          {/* Description */}
           <p className="text-xs sm:text-sm text-slate-300 leading-relaxed font-arabic">
             {step.description}
           </p>
 
-          {/* Action Tip Pill Box */}
           <div className="bg-slate-950 border border-slate-800/90 rounded-lg p-3 text-xs flex items-start gap-2.5 text-slate-300 font-arabic">
             <span className="w-1.5 h-1.5 rounded-full bg-amber-400 mt-1.5 shrink-0" />
             <div className="leading-relaxed">
-              <strong className="text-amber-300 font-medium ml-1">تلميح فيزيائي:</strong>
+              <strong className="text-amber-300 font-medium ml-1">توجيه فيزيائي:</strong>
               <span>{step.actionTip}</span>
             </div>
           </div>
 
-          {/* Step Pill Navigator Dots */}
           <div className="flex items-center justify-center gap-2 pt-2" dir="ltr">
             {TOUR_STEPS.map((s, idx) => {
               const active = idx === currentIdx;
@@ -231,7 +216,6 @@ export function GuidedTour({ isOpen, onClose, onHighlightChange }: GuidedTourPro
           </div>
         </div>
 
-        {/* Modal Footer Controls */}
         <div className="px-5 py-3 border-t border-slate-800/80 bg-slate-950/80 flex items-center justify-between gap-3">
           <button
             onClick={handlePrev}
@@ -250,7 +234,7 @@ export function GuidedTour({ isOpen, onClose, onHighlightChange }: GuidedTourPro
             onClick={handleComplete}
             className="text-[11px] text-slate-500 hover:text-slate-300 transition-colors cursor-pointer font-arabic"
           >
-            تخطي الجولة واستكشف بنفسك
+            تخطي الجولة
           </button>
 
           <button
@@ -275,9 +259,6 @@ export function GuidedTour({ isOpen, onClose, onHighlightChange }: GuidedTourPro
   );
 }
 
-/**
- * Onboarding Trigger Button for the Header Bar
- */
 export function GuidedTourButton({ onTrigger }: { onTrigger: () => void }) {
   return (
     <button
